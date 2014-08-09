@@ -7,6 +7,9 @@
 # Copyright © 2014 Spotwise 
 #
 
+# TODO: Change as appropriately
+footer = '&copy; <a href="http://www.example.com">Example Inc</a> 2014.'
+
 # Install gems
 gem "devise"
 gem 'cancancan', '~> 1.8'
@@ -196,8 +199,6 @@ inject_into_file "config/initializers/devise.rb", :before => %r{^end$} do <<-'FI
 FILE
 end
 
-
-# ============= NO CHANGES BELOW THIS LINE ===================
 
 # Add PostgreSQL in production for Heroku
 gsub_file 'Gemfile', %r{gem 'sqlite3'} do <<-'FILE'
@@ -472,10 +473,10 @@ end
 
 # TODO:  Change copyright in footer
 gsub_file 'app/views/layouts/application.html.erb', 
-    %r{<footer>.*</footer>}mi do <<-'FILE'
+    %r{<footer>.*</footer>}mi do <<-FILE
 <footer>
   		<hr/>
-      <p><center>&copy; <a href="http://www.example.com">Example Inc</a> 2014.</center></p>
+      <p><center>#{footer}</center></p>
 </footer>
 
 FILE
@@ -719,7 +720,7 @@ FILE
 end
 
 # TODO: Change the class of the HTML tag to "background" to enable a background image on the login page (and add an image
-create_file 'app/views/layouts/devise.html.erb' do <<-'FILE'
+create_file 'app/views/layouts/devise.html.erb' do <<-FILE
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -776,7 +777,7 @@ create_file 'app/views/layouts/devise.html.erb' do <<-'FILE'
 
       <footer>
   		<hr/>
-      <p><center>Crafted with <span>♥</span> in Sweden. &copy; <a href="http://www.spotwise.com">Spotwise</a> 2014.</center></p>
+      <p><center>#{footer}</center></p>
 </footer>
 
 
