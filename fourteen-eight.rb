@@ -10,6 +10,36 @@
 # TODO: Change as appropriately
 footer = '&copy; <a href="http://www.example.com">Example Inc</a> 2014.'
 
+# TODO: Turn on and off login options
+login_local = true
+login_facebook = true
+login_twitter = true
+login_linkedin = true
+
+login_oauth = login_facebook && login_twitter && login_linkedin
+
+# TODO: Specify oauth provider keys
+# Facebook: https://developers.facebook.com
+# Twitter: https://dev.twitter.com
+# Linkedin: https://www.linkedin.com/secure/developer
+
+# Production keys - these need to be unique for this application
+facebook_id_production          = "000000000000"
+facebook_secret_production      = "000000000000"
+twitter_key_production          = "000000000000"
+twitter_key_production          = "000000000000"
+linkedin_api_key_production     = "000000000000"
+linkedin_secret_key_production  = "000000000000"
+
+# Development keys - these can be reused between applications
+facebook_id_development         = "000000000000"
+facebook_secret_development     = "000000000000"
+twitter_key_development         = "000000000000"
+twitter_key_development         = "000000000000"
+linkedin_api_key_development    = "000000000000"
+linkedin_secret_key_development = "000000000000"
+
+
 # Install gems
 gem "devise"
 gem 'cancancan', '~> 1.8'
@@ -18,9 +48,9 @@ gem "therubyracer"
 gem "less-rails"
 gem "twitter-bootstrap-rails"
 
-gem 'omniauth-facebook'
-gem 'omniauth-twitter'
-gem 'omniauth-linkedin'
+gem 'omniauth-facebook' if login_facebook
+gem 'omniauth-twitter' if login_twitter
+gem 'omniauth-linkedin' if login_linkedin
 
 run "bundle install"
 
@@ -88,22 +118,42 @@ generate(:migration, "AddNameToUsers name:string --force")
 generate(:migration, "AddProviderToUsers provider:string uid:string --force")
 rake "db:migrate"
 
-# Add columns to the user table for Facebook and Twitter
-generate(:migration, "AddFacebookToUsers fb_email:string fb_first_name:string fb_last_name:string fb_name:string fb_location:string fb_image:string fb_nickname:string fb_url:string fb_gender:string fb_locale:string fb_username:string --force")
-generate(:migration, "AddTwitterToUsers twitter_name:string twitter_nickname:string twitter_location:string twitter_image:string twitter_description:string twitter_friends:integer twitter_followers:integer twitter_statuses:integer twitter_listed:integer --force")
-generate(:migration, "AddLinkedinToUsers li_email:string li_first_name:string li_last_name:string li_name:string li_image:text li_headline:string li_industry:string --force")
-rake "db:migrate"
+p = %w{ :email :password :password_confirmation :remember_me :roles_mask :roles :provider :uid }
 
-inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-'FILE'
+# Add columns to the user table for Facebook and Twitter
+if login_facebook
+  generate(:migration, "AddFacebookToUsers fb_email:string fb_first_name:string fb_last_name:string \
+    fb_name:string fb_location:string fb_image:string fb_nickname:string fb_url:string fb_gender:string \
+    fb_locale:string fb_username:string --force")
+  p << %w{ :fb_first_name :fb_last_name :fb_name :fb_location :fb_image :fb_nickname :fb_url :fb_gender :fb_locale :fb_username }
+end
+
+if login_twitter
+  generate(:migration, "AddTwitterToUsers twitter_name:string twitter_nickname:string \
+    twitter_location:string twitter_image:string twitter_description:string twitter_friends:integer \
+    twitter_followers:integer twitter_statuses:integer twitter_listed:integer --force")
+    p << %w{ :twitter_name :twitter_nickname :twitter_location :twitter_image :twitter_description :twitter_friends :twitter_followers :twitter_statuses :twitter_listed }
+end
+
+if login_linkedin
+  generate(:migration, "AddLinkedinToUsers li_email:string li_first_name:string li_last_name:string \
+    li_name:string li_image:text li_headline:string li_industry:string --force")
+  p << %w{ :li_email :li_first_name :li_last_name :li_name :li_image :li_headline :li_industry }
+end
+
+inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-FILE
 
   def user_params
-    params.permit(:email, :password, :password_confirmation, :remember_me, :roles_mask, :roles, :provider, :uid, :fb_first_name, :fb_last_name, :fb_name, :fb_location, :fb_image, :fb_nickname, :fb_url, :fb_gender, :fb_locale, :fb_username, :twitter_name, :twitter_nickname, :twitter_location, :twitter_image, :twitter_description, :twitter_friends, :twitter_followers, :twitter_statuses, :twitter_listed, :li_email, :li_first_name, :li_last_name, :li_name, :li_image, :li_headline, :li_industry)
+    params.permit(#{p.join(", ")})
   end
 
 FILE
 end
 
+rake "db:migrate"
+
 # Add seed data to create a user
+if login_local
 append_file 'db/seeds.rb' do <<-'FILE'
 
 puts "Create users"
@@ -113,6 +163,7 @@ if User.count == 0
   User.create(:email => "test2@example.com", :password => "test", :password_confirmation => "test").save(:validate => false)
 end
 FILE
+end
 end
 
 # Create seed data
@@ -170,35 +221,43 @@ gsub_file 'app/views/layouts/application.html.erb',
 FILE
 end
 
-# Define API keys for the various OAuth providers
-# TODO: Change API keys to personal ones for the site being built
-#
+# Define API keys for the various OAuth providers. These keys are edited at the top of this file
+
+if login_facebook
 inject_into_file "config/initializers/devise.rb", :before => %r{^end$} do <<-'FILE'
 
   require "omniauth-facebook"
-  require "omniauth-twitter"
-  require "omniauth-linkedin"
-  
-  # TODO: Change to proper keys below based on information found on the Facebook/Twitter/Linkedin developer sites
-  
-  # Facebook: https://developers.facebook.com 
-  # Twitter: https://dev.twitter.com
-  # Linkedin: https://www.linkedin.com/secure/developer
-  
-  fb_id           = Rails.env.production? ? "FB_ID_PRODUCTION" : "FB_ID_DEVELOPMENT"
-  fb_secret       = Rails.env.production? ? "FB_SECRET_PRODUCTION" : "FB_SECRET_DEVELOPMENT"
-  twitter_key     = Rails.env.production? ? "TWITTER_KEY_PRODUCTION" : "TWITTER_KEY_DEVELOPMENT"
-  twitter_secret  = Rails.env.production? ? "TWITTER_SECRET_PRODUCTION" : "TWITTER_SECRET_DEVELOPMENT"
-  li_api_key      = Rails.env.production? ? "LINKEDIN_API_KEY_PRODUCTION" : "LINKEDIN_API_KEY_DEVELOPMENT"
-  li_secret_key   = Rails.env.production? ? "LINKEDIN_SECRET_KEY_PRODUCTION" : "LINKEDIN_SECRET_KEY_DEVELOPMENT"
-  
+  fb_id           = Rails.env.production? ? "#{facebook_id_production}" : "#{facebook_id_development}"
+  fb_secret       = Rails.env.production? ? "#{facebook_secret_production}" : "#{facebook_secret_development}"
   config.omniauth :facebook, fb_id, fb_secret
-  config.omniauth :twitter, twitter_key, twitter_secret
-  config.omniauth :linked_in, li_api_key, li_secret_key
-  
+
 FILE
 end
+end
 
+if login_twitter
+inject_into_file "config/initializers/devise.rb", :before => %r{^end$} do <<-'FILE'
+
+  require "omniauth-twitter"
+  twitter_key     = Rails.env.production? ? "#{twitter_key_production}" : "#{twitter_key_development}"
+  twitter_secret  = Rails.env.production? ? "#{twitter_secret_production}" : "#{twitter_secret_development}"
+  config.omniauth :twitter, twitter_key, twitter_secret
+
+FILE
+end
+end
+
+if login_linkedin
+inject_into_file "config/initializers/devise.rb", :before => %r{^end$} do <<-'FILE'
+
+  require "omniauth-linkedin"
+  li_api_key      = Rails.env.production? ? "#{linkedin_api_key_production}" : "#{linkedin_api_key_development}"
+  li_secret_key   = Rails.env.production? ? "#{linkedin_secret_key_production}" : "#{linkedin_secret_key_development}"
+  config.omniauth :linked_in, li_api_key, li_secret_key
+
+FILE
+end
+end
 
 # Add PostgreSQL in production for Heroku
 gsub_file 'Gemfile', %r{gem 'sqlite3'} do <<-'FILE'
@@ -292,14 +351,19 @@ div.row {
 FILE
 end
 
+providers = []
+providers << ":facebook" if login_facebook
+providers << ":twitter" if login_twitter
+providers << ":linkedin" if login_linkedin
 
 # Omniauth (https://github.com/plataformatec/devise/wiki/OmniAuth:-Overview)
-gsub_file 'app/models/user.rb', %r{:validatable}, ':validatable, :omniauthable, :omniauth_providers => [:facebook, :twitter, :linkedin]'
+if login_oauth
+gsub_file "app/models/user.rb", %r{:validatable}, ":validatable, :omniauthable, :omniauth_providers => [#{providers.join(", ")}]"
 gsub_file 'config/routes.rb', "devise_for :users", 'devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }'
 
-
-create_file 'app/controllers/users/omniauth_callbacks_controller.rb' do <<-'FILE'
+create_file 'app/controllers/users/omniauth_callbacks_controller.rb' do <<-FILE
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+#{ if login_facebook; <<FACEBOOK
   def facebook
     # You need to implement the method below in your model (e.g. app/models/user.rb)
     @user = User.find_for_facebook_oauth(request.env["omniauth.auth"], current_user)
@@ -312,7 +376,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to new_user_registration_url
     end
   end
-
+FACEBOOK
+end
+}
+#{ if login_twitter; <<TWITTER
   def twitter
     # You need to implement the method below in your model (e.g. app/models/user.rb)
     puts request.env["omniauth.auth"]
@@ -327,7 +394,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to new_user_registration_url
     end
   end
-  
+TWITTER
+end
+}
+#{ if login_linkedin; <<LINKEDIN
   def linkedin
     # You need to implement the method below in your model (e.g. app/models/user.rb)
     puts request.env["omniauth.auth"]
@@ -342,9 +412,12 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to new_user_registration_url
     end
   end
-  
+LINKEDIN
+end
+}
 end
 FILE
+end
 end
 
 # Update the user model with roles
@@ -355,12 +428,25 @@ require 'role_model'
 FILE
 end
 
-inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-'FILE'
+username = []
+username << "name" if login_local
+username << "fb_name" if login_facebook
+username << "twitter_name" if login_twitter
+username << "li_name" if login_twitter
+username << '"<no name>"'
+
+avatar = []
+avatar << "fb_image" if login_facebook
+avatar << "twitter_image" if login_twitter
+avatar << "li_image" if login_linkedin
+avatar << '"http://www.gravatar.com/avatar/\#{Digest::MD5.hexdigest(email)}"'
+
+inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-FILE
 
   def email_required?
     super && provider.blank?
   end
-
+#{ if login_facebook; <<FACEBOOK
   def self.find_for_facebook_oauth(auth, signed_in_resource=nil)
     user = User.where(:provider => auth.provider, :uid => auth.uid).first
     unless user
@@ -383,7 +469,10 @@ inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-'FILE'
     end
     user
   end
-
+FACEBOOK
+end
+}
+#{ if login_twitter; <<TWITTER
   def self.find_for_twitter_oauth(auth, signed_in_resource=nil)
     user = User.where(:provider => auth.provider, :uid => auth.uid).first
     unless user
@@ -404,7 +493,10 @@ inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-'FILE'
     end
     user
   end  
-  
+TWITTER
+end
+}
+#{ if login_linkedin; <<LINKEDIN
   def self.find_for_linkedin_oauth(auth, signed_in_resource=nil)
     user = User.where(:provider => auth.provider, :uid => auth.uid).first
     unless user
@@ -423,7 +515,9 @@ inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-'FILE'
     end
     user
   end  
-  
+LINKEDIN
+end
+}
   
   def self.new_with_session(params, session)
     super.tap do |user|
@@ -434,11 +528,11 @@ inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-'FILE'
   end
 
   def username
-    name || fb_name || twitter_name || li_name ||  "<no name>"
+    #{username.join(" || ")}
   end
   
   def avatar
-    fb_image || twitter_image || li_image || "http://www.gravatar.com/avatar/#{Digest::MD5.hexdigest(email)}"
+    #{avatar.join(" || ")}
   end
     
   # Role model
@@ -587,25 +681,37 @@ FILE
 end
 
 # TODO: Select login/registration options
-create_file 'app/views/devise/sessions/new.html.erb' do <<-'FILE'
+create_file 'app/views/devise/sessions/new.html.erb' do <<-FILE
 <br/><br/>
 
+#{ if login_facebook; <<FACEBOOK
 <div class="row">
 	<div class="span4 offset4">
     <a class="btn btn-large btn-block btn-social btn-facebook" href="/users/auth/facebook"><i class="icon-facebook"></i>&nbsp;&nbsp;|&nbsp;&nbsp;Log in with Facebook</a>
   </div>
 </div>
+FACEBOOK
+end
+}
+#{ if login_twitter; <<TWITTER
 <div class="row">
 	<div class="span4 offset4">
 	<a class="btn btn-large btn-block btn-social btn-twitter" href="/users/auth/twitter"><i class="icon-twitter"></i>&nbsp;&nbsp;|&nbsp;&nbsp;Log in with Twitter</a>
   </div>
 </div>
+TWITTER
+end
+}
+#{ if login_linkedin; <<LINKEDIN
 <div class="row">
 	<div class="span4 offset4">
 	<a class="btn btn-large btn-block btn-social btn-linkedin" href="/users/auth/linkedin"><i class="icon-linkedin"></i>&nbsp;&nbsp;|&nbsp;&nbsp;Log in with Linkedin</a>
   </div>
 </div>
-
+LINKEDIN
+end
+}
+#{ if login_local; <<LOCAL
 <div class="row">
 	<div class="span8 offset2">
 		<hr/>
@@ -639,28 +745,42 @@ create_file 'app/views/devise/sessions/new.html.erb' do <<-'FILE'
 		<a class="btn btn-large btn-block" href="/users/sign_up">Join</a>
 	</div>
 </div>
+LOCAL
+end
+}
 FILE
 end
 
 # TODO: Select login/registration options
 create_file 'app/views/devise/registrations/new.html.erb' do <<-'FILE'
 <br/><br/>
+#{ if login_facebook; <<FACEBOOK
 <div class="row">
 	<div class="span4 offset4">
     <a class="btn btn-large btn-block btn-social btn-facebook" href="/users/auth/facebook"><i class="icon-facebook"></i>&nbsp;&nbsp;|&nbsp;&nbsp;Join with Facebook</a>
   </div>
 </div>
+FACEBOOK
+end
+}
+#{ if login_twitter; <<TWITTER
 <div class="row">
 	<div class="span4 offset4">
 	<a class="btn btn-large btn-block btn-social btn-twitter" href="/users/auth/twitter"><i class="icon-twitter"></i>&nbsp;&nbsp;|&nbsp;&nbsp;Join with Twitter</a>
   </div>
 </div>
+TWITTER
+end
+}
+#{ if login_linkedin; <<LINKEDIN
 <div class="row">
 	<div class="span4 offset4">
 	<a class="btn btn-large btn-block btn-social btn-linkedin" href="/users/auth/linkedin"><i class="icon-linkedin"></i>&nbsp;&nbsp;|&nbsp;&nbsp;Join with Linkedin</a>
   </div>
 </div>
-
+LINKEDIN
+end
+}
 <div class="row">
 	<div class="span8 offset2">
 		<hr/>
