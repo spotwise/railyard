@@ -27,7 +27,7 @@ login_oauth = login_facebook && login_twitter && login_linkedin
 facebook_id_production          = "000000000000"
 facebook_secret_production      = "000000000000"
 twitter_key_production          = "000000000000"
-twitter_key_production          = "000000000000"
+twitter_secret_production       = "000000000000"
 linkedin_api_key_production     = "000000000000"
 linkedin_secret_key_production  = "000000000000"
 
@@ -35,7 +35,7 @@ linkedin_secret_key_production  = "000000000000"
 facebook_id_development         = "000000000000"
 facebook_secret_development     = "000000000000"
 twitter_key_development         = "000000000000"
-twitter_key_development         = "000000000000"
+twitter_secret_development      = "000000000000"
 linkedin_api_key_development    = "000000000000"
 linkedin_secret_key_development = "000000000000"
 
@@ -224,7 +224,7 @@ end
 # Define API keys for the various OAuth providers. These keys are edited at the top of this file
 
 if login_facebook
-inject_into_file "config/initializers/devise.rb", :before => %r{^end$} do <<-'FILE'
+inject_into_file "config/initializers/devise.rb", :before => %r{^end$} do <<-FILE
 
   require "omniauth-facebook"
   fb_id           = Rails.env.production? ? "#{facebook_id_production}" : "#{facebook_id_development}"
@@ -236,7 +236,7 @@ end
 end
 
 if login_twitter
-inject_into_file "config/initializers/devise.rb", :before => %r{^end$} do <<-'FILE'
+inject_into_file "config/initializers/devise.rb", :before => %r{^end$} do <<-FILE
 
   require "omniauth-twitter"
   twitter_key     = Rails.env.production? ? "#{twitter_key_production}" : "#{twitter_key_development}"
@@ -248,7 +248,7 @@ end
 end
 
 if login_linkedin
-inject_into_file "config/initializers/devise.rb", :before => %r{^end$} do <<-'FILE'
+inject_into_file "config/initializers/devise.rb", :before => %r{^end$} do <<-FILE
 
   require "omniauth-linkedin"
   li_api_key      = Rails.env.production? ? "#{linkedin_api_key_production}" : "#{linkedin_api_key_development}"
@@ -680,7 +680,6 @@ create_file 'app/views/home/index.html.erb' do <<-'FILE'
 FILE
 end
 
-# TODO: Select login/registration options
 create_file 'app/views/devise/sessions/new.html.erb' do <<-FILE
 <br/><br/>
 
@@ -751,7 +750,6 @@ end
 FILE
 end
 
-# TODO: Select login/registration options
 create_file 'app/views/devise/registrations/new.html.erb' do <<-'FILE'
 <br/><br/>
 #{ if login_facebook; <<FACEBOOK
@@ -839,7 +837,7 @@ create_file 'app/views/devise/passwords/new.html.erb' do <<-'FILE'
 FILE
 end
 
-# TODO: Change the class of the HTML tag to "background" to enable a background image on the login page (and add an image
+# TODO: Change the class of the HTML tag to "background" to enable a background image on the login page (and add an image)
 create_file 'app/views/layouts/devise.html.erb' do <<-FILE
 <!DOCTYPE html>
 <html lang="en">
