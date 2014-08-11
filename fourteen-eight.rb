@@ -750,7 +750,7 @@ end
 FILE
 end
 
-create_file 'app/views/devise/registrations/new.html.erb' do <<-'FILE'
+create_file 'app/views/devise/registrations/new.html.erb' do <<-FILE
 <br/><br/>
 #{ if login_facebook; <<FACEBOOK
 <div class="row">
