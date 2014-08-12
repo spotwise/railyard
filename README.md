@@ -5,6 +5,8 @@ This repository contains tools to quickly set up new Ruby on Rails projects. Mos
 * Responsive design based on Twitter Bootstrap
 * Oauth2 login support (Facebook, Twitter and Linkedin)
 
+The choice of authentication services is arbitrary to allow for any combination of local, Facebook, Twitter or Linkedin accounts.
+
 ## Dependencies
 
 This project depends on the following:
@@ -28,14 +30,17 @@ Once the site has been created, then change to the site directory and run
 
 Then open your browser and access http://localhost:3000 and you should be met with the site homepage.
 
-The above will create a Rails project with a few example models. Although this will work as an example it may not be what you want. To be able to customise the project the template file should be downloaded and then modified according to your needs. The template file is sprinkled with the text TODO where modifications should be added.
+The above will create a Rails project with a few example models. Although this will work as an example it is probably not be what you want. To be able to customise the project the template file should be downloaded and then modified according to your needs. The template file is sprinkled with the text TODO where modifications should be added.
 
-Once the template has beed modified to your satisfaction then run the above command but change the URI to the path to the modified file.
+The template uses a number of default settings that need to be modified. At the minimum the data model should be modified before running the template to create the database schema necessary for the intended application and not leave remnants of the example models. 
 
-The template uses a number of default settings that need to be modified:
+Other settings that may be modified later include:
 
 * API keys for Facebook, Twitter and Linkedin
 * Colours for navigation bar and links
 * Images on home page
 * Footer message
 * Site logo
+
+Once the template has beed modified to your satisfaction then run the above command but change the URI to the path to the modified file.
+

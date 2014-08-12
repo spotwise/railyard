@@ -1,4 +1,6 @@
 #
+# Template: Fourteen Eight
+#
 # This template sets up a rails project with
 # Bootstrap, a nice theme, some scaffolding
 # and authentication with support for 
