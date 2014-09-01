@@ -48,7 +48,7 @@ gem 'cancancan', '~> 1.8'
 gem "role_model"
 gem "therubyracer"
 gem "less-rails"
-gem "twitter-bootstrap-rails"
+gem "twitter-bootstrap-rails", '~> 2.2.7'
 
 gem 'omniauth-facebook' if login_facebook
 gem 'omniauth-twitter' if login_twitter
