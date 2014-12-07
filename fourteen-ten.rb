@@ -82,6 +82,15 @@ generate("bootswatch:install #{theme}")
 generate("bootswatch:import #{theme} --force")
 generate("bootswatch:layout #{theme} --force")
 
+# Fix issue due to removed property in Bootstrap, not yet fixed in Bootswatch
+append_file "app/assets/stylesheets/#{theme}/variables.less" do <<-'FILE'
+
+// Fix for undefined value due to change in Bootstrap
+// https://github.com/scottvrosenthal/twitter-bootswatch-rails/issues/30
+@zindex-modal-background: 0;
+FILE
+end
+
 
 create_file 'config/initializers/assets.rb' do <<-'FILE'
 # Add all theme css and js files to the list of assets
