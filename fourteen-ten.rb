@@ -22,7 +22,7 @@ login_facebook = true
 login_twitter = true
 login_linkedin = true
 
-login_oauth = login_facebook && login_twitter && login_linkedin
+login_oauth = login_facebook || login_twitter || login_linkedin
 
 # TODO: Specify oauth provider keys
 # Facebook: https://developers.facebook.com
