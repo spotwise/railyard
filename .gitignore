@@ -25,3 +25,6 @@ config/secrets.yml
 
 # OS X files
 .DS_Store
+
+# Development keys
+keys.patch
