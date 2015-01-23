@@ -3,9 +3,9 @@
 This repository contains tools to quickly set up new Ruby on Rails projects. Most importantly it it includes templates to setup a new Rails project with support for:
 
 * Responsive design based on Twitter Bootstrap
-* Oauth2 login support (Facebook, Twitter and Linkedin)
+* Oauth2 login support (Facebook, Twitter, Linkedin and Google)
 
-The choice of authentication services is arbitrary to allow for any combination of local, Facebook, Twitter or Linkedin accounts.
+The choice of authentication services is arbitrary to allow for any combination of local, Facebook, Twitter, Linkedin or Google accounts.
 
 ## Dependencies
 
@@ -28,7 +28,7 @@ Once the site has been created, then change to the site directory and run
 
     rails s
 
-Then open your browser and access http://localhost:3000 and you should be met with the site homepage. The template by default creates two test users, test1@example.com and test2@example.com, both with the password 'test'. Also by default, the template enables the use of Facebook, Twitter, Linkedin and Google+ although none of these will work until you have added your own API keys. 
+Then open your browser and access http://localhost:3000 and you should be met with the site homepage. The template by default creates two test users, test1@example.com and test2@example.com, both with the password 'test'. Also by default, the template enables the use of Facebook, Twitter, Linkedin and Google although none of these will work until you have added your own API keys. 
 
 The above command will create a Rails project with a few example models. Although this will work as an example it is probably not be what you want. To be able to customise the project the template file should be downloaded and then modified according to your needs. The template file is sprinkled with the text TODO where modifications should be added.
 
@@ -36,7 +36,7 @@ The template uses a number of default settings that need to be modified. At the 
 
 Other settings that may be modified later include:
 
-* API keys for Facebook, Twitter and Linkedin
+* API keys for Facebook, Twitter, Linkedin and Google
 * Name of Bootswatch theme
 * Colours for navigation bar and links
 * Images on home page
@@ -44,6 +44,8 @@ Other settings that may be modified later include:
 * Site logo
 
 Once the template has beed modified to your satisfaction then run the above command but change the URI to the path to the modified file.
+
+For a more extensive description of how to setup a Rails site using this template, please refer to http://www.spotwise.com/2015/01/04/create-a-web-site-in-53-seconds/.
 
 ## History
 
