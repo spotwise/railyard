@@ -296,7 +296,11 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     if @user.persisted?
       sign_in_and_redirect @user, :event => :authentication #this will throw if @user is not activated
-      set_flash_message(:notice, :success, :kind => "Facebook") if is_navigational_format?
+      if @user.errors.empty?
+        set_flash_message(:notice, :success, :kind => "Facebook") if is_navigational_format?
+      else
+        set_flash_message(:error, @user.errors[:base].first) if is_navigational_format?
+      end
     else
       session["devise.facebook_data"] = request.env["omniauth.auth"]
       redirect_to new_user_registration_url
@@ -314,7 +318,11 @@ end
 
     if @user.persisted?
       sign_in_and_redirect @user, :event => :authentication #this will throw if @user is not activated
-      set_flash_message(:notice, :success, :kind => "Twitter") if is_navigational_format?
+      if @user.errors.empty?
+        set_flash_message(:notice, :success, :kind => "Twitter") if is_navigational_format?
+      else
+        set_flash_message(:error, @user.errors[:base].first) if is_navigational_format?
+      end
     else
       session["devise.twitter_data"] = request.env["omniauth.auth"].except("extra")
       redirect_to new_user_registration_url
@@ -332,7 +340,11 @@ end
 
     if @user.persisted?
       sign_in_and_redirect @user, :event => :authentication #this will throw if @user is not activated
-      set_flash_message(:notice, :success, :kind => "Linkedin") if is_navigational_format?
+      if @user.errors.empty?
+        set_flash_message(:notice, :success, :kind => "Linkedin") if is_navigational_format?
+      else
+        set_flash_message(:error, @user.errors[:base].first) if is_navigational_format?
+      end
     else
       session["devise.linkedin_data"] = request.env["omniauth.auth"].except("extra")
       redirect_to new_user_registration_url
@@ -350,7 +362,11 @@ end
 
     if @user.persisted?
       sign_in_and_redirect @user, :event => :authentication #this will throw if @user is not activated
-      set_flash_message(:notice, :success, :kind => "google") if is_navigational_format?
+      if @user.errors.empty?
+        set_flash_message(:notice, :success, :kind => "google") if is_navigational_format?
+      else
+        set_flash_message(:error, @user.errors[:base].first) if is_navigational_format?
+      end
     else
       session["devise.google_data"] = request.env["omniauth.auth"].except("extra")
       redirect_to new_user_registration_url
@@ -393,6 +409,12 @@ inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-FILE
     super && provider.blank?
   end
 
+  def self.is_uid_taken?(user, column, uid)
+    u = User.where(column => uid).first
+    return true if u and u.id != user.id
+    return false
+  end
+
 #{ if login_facebook; <<FACEBOOK
   def has_facebook?
     return fb_uid.present?
@@ -411,6 +433,11 @@ inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-FILE
         password:Devise.friendly_token[0,20]
         ) 
       session["user_return_to"] = "/users/edit"
+    end
+
+    if User.is_uid_taken?(user, :fb_uid, auth.uid)
+      user.errors[:base] << :taken
+      return user
     end
 
     user.update_attributes(
@@ -451,6 +478,11 @@ end
       session["user_return_to"] = "/users/edit"
     end
 
+    if User.is_uid_taken?(user, :twitter_uid, auth.uid)
+      user.errors[:base] << :taken
+      return user
+    end
+
     user.update_attributes(
           twitter_uid:auth.uid,
           twitter_name:auth.info.name,
@@ -489,6 +521,11 @@ end
       session["user_return_to"] = "/users/edit"
     end
 
+    if User.is_uid_taken?(user, :li_uid, auth.uid)
+      user.errors[:base] << :taken
+      return user
+    end
+
     user.update_attributes(
         li_uid:auth.uid,
         li_email:auth.info.email,
@@ -524,7 +561,12 @@ end
         )
       session["user_return_to"] = "/users/edit"
     end
-  
+
+    if User.is_uid_taken?(user, :go_uid, auth.uid)
+      user.errors[:base] << :taken
+      return user
+    end
+
     user.update_attributes(
         go_uid:auth.uid,
         go_email:auth.info.email,
@@ -645,6 +687,7 @@ create_file 'app/views/layouts/application.html.erb' do <<-FILE
     <div class="container">
 		<br/><br/>
 		<div class="page-header">
+			<%= bootstrap_flash %>
 			<%= yield %>
 		</div>
 		<br/>
@@ -1152,6 +1195,12 @@ end
 		:method => :delete, :class => 'btn btn-danger' %></p>
 
 </div></div></div>
+FILE
+end
+
+inject_into_file "config/locales/devise.en.yml", :before => %r{^    passwords:$} do <<-FILE
+      user:
+        taken: "That identity is already claimed for another account."
 FILE
 end
 
