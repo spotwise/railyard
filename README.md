@@ -20,7 +20,7 @@ The template is known to work on OS X 10.10 and should work on any Linux system.
 
 The quickest way to use the template is to access the template via HTTP:
 
-    rails new [sitename] -m https://github.com/spotwise/railyard/raw/master/fifteen-one.rb
+    rails new [sitename] -m https://github.com/spotwise/railyard/raw/master/fifteen-five.rb
 
 Replace [sitename] with the name of the project to be created. The Rails system will create a new Ruby on Rails site in the local directory and run the template directly from the web.
 
@@ -53,4 +53,6 @@ For a more extensive description of how to setup a Rails site using this templat
 * 2014-10-03 Support for Bootstrap 3
 * 2014-12-20 Added support for Google+
 * 2015-01-23 Improved handling of multiple authentication providers
+* 2015-02-27 New theme with support for full width hero image
+* 2015-05-28 Various layout fixes
 

@@ -87,7 +87,7 @@ generate(:devise, "User")
 # Choice of theme: Cerulean, Cosmo, Cyborg, Darkly, Flatly, Journal, Lumen,
 # Paper, Readable, Sandstone, Simplex, Slate, Spacelab, Superhero, United or Yeti
 # For more information: http://bootswatch.com
-theme = "cosmo"
+theme = "yeti"
 generate("bootswatch:install #{theme}")
 generate("bootswatch:import #{theme} --force")
 generate("bootswatch:layout #{theme} --force")
@@ -101,7 +101,8 @@ append_file "app/assets/stylesheets/#{theme}/variables.less" do <<-'FILE'
 FILE
 end
 
-create_file 'config/initializers/assets.rb' do <<-'FILE'
+append_file 'config/initializers/assets.rb' do <<-'FILE'
+
 # Add all theme css and js files to the list of assets
 @files = Dir.glob("app/assets/javascripts/*")
 @files.each do |file|
@@ -667,7 +668,7 @@ create_file 'app/views/layouts/application.html.erb' do <<-FILE
           </ul>
 		  <ul class="nav navbar-nav navbar-right">
 		    <% if user_signed_in? then -%>
-			<li class="hidden-phone hidden-tablet"><%= image_tag current_user.avatar, :size => "32x32", :class => "img-circle", :style => "margin-top:9px;margin-left:16px;margin-right:4px" %></li>  
+			<li class="hidden-phone hidden-tablet"><%= image_tag current_user.avatar, :size => "32x32", :class => "img-circle", :style => "margin-top:7px;margin-left:16px;margin-right:4px" %></li>  
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= current_user.username %> <b class="caret"></b></a>
               <ul class="dropdown-menu">
@@ -758,7 +759,7 @@ body.background {
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: center center !important;
-	margin-top: 50px;
+	margin-top: 45px;
 	height: 400px;
 }
 .jumbotron h2,
@@ -915,7 +916,7 @@ end
 #{ if login_google; <<GOOGLE
 <div class="row">
 	<div class="col-lg-4 col-lg-offset-4">
-	<a class="btn btn-lg btn-block btn-social btn-google-plus" href="/users/auth/google_oauth2"><i class="fa fa-google-plus"></i>Log in with Google+</a>
+	<a class="btn btn-lg btn-block btn-social btn-google" href="/users/auth/google_oauth2"><i class="fa fa-google-plus"></i>Log in with Google+</a>
   </div>
 </div>
 GOOGLE
@@ -993,7 +994,7 @@ end
 #{ if login_google; <<GOOGLE
 <div class="row">
 	<div class="col-lg-4 col-lg-offset-4">
-	<a class="btn btn-lg btn-block btn-social btn-google-plus" href="/users/auth/google_oauth2"><i class="fa fa-google-plus"></i>Join with Google+</a>
+	<a class="btn btn-lg btn-block btn-social btn-google" href="/users/auth/google_oauth2"><i class="fa fa-google-plus"></i>Join with Google+</a>
   </div>
 </div>
 GOOGLE
@@ -1163,7 +1164,7 @@ end
 }
 #{ if login_google; <<GOOGLE
 	<div style="width:200px;float:left;margin-right:30px">
-	<a class="btn btn-block btn-social btn-google-plus <%= "disabled" if current_user.has_google? %>" href="/users/auth/google_oauth2"><i class="fa fa-google-plus" style="line-height:26px;"></i>Google+</a>
+	<a class="btn btn-block btn-social btn-google <%= "disabled" if current_user.has_google? %>" href="/users/auth/google_oauth2"><i class="fa fa-google-plus" style="line-height:26px;"></i>Google+</a>
 	</div>
 GOOGLE
 end
