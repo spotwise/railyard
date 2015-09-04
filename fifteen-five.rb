@@ -1,5 +1,5 @@
 #
-# Template: Fifteen Three
+# Template: Fifteen Five
 #
 # This template sets up a rails project with
 # Bootstrap, a nice theme, some scaffolding
