@@ -11,7 +11,7 @@ The choice of authentication services is arbitrary to allow for any combination 
 
 This project depends on the following:
 
-* Rails 4.1 (or later)
+* Rails
 * Command line support for wget
 
 The template is known to work on OS X 10.10 and should work on any Linux system. Most likely it does not work on Windows due to the use of typical OS X / Linux commands. 
@@ -20,9 +20,9 @@ The template is known to work on OS X 10.10 and should work on any Linux system.
 
 The quickest way to use the template is to access the template via HTTP:
 
-    rails new [sitename] -m https://github.com/spotwise/railyard/raw/master/fifteen-five.rb
+    rails new SITENAME -m https://github.com/spotwise/railyard/raw/master/sixteen-four.rb
 
-Replace [sitename] with the name of the project to be created. The Rails system will create a new Ruby on Rails site in the local directory and run the template directly from the web.
+Replace SITENAME with the name of the project to be created. The Rails system will create a new Ruby on Rails site in the local directory and run the template directly from the web.
 
 Once the site has been created, then change to the site directory and run
 
@@ -55,4 +55,5 @@ For a more extensive description of how to setup a Rails site using this templat
 * 2015-01-23 Improved handling of multiple authentication providers
 * 2015-02-27 New theme with support for full width hero image
 * 2015-05-28 Various layout fixes
+* 2016-04-03 Updated to work with Rails 4.2.6
 
