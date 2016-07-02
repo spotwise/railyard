@@ -1,13 +1,19 @@
 #
 # Template: Sixteen Four
 #
-# This template sets up a rails project with
-# Bootstrap, a nice theme, some scaffolding
-# and authentication with support for 
-# Facebook, Twitter, Google and Linkedin login
+# This template sets up a rails project with Bootstrap, a nice theme,
+# some scaffolding and authentication with support for Facebook,
+# Twitter, Google and Linkedin login.
+#
+# This template works best with Rails 4.2.6. If you have multiple
+# Rails versions you can select the one to use when running the
+# template, e.g.:
+#
+#   rails _4.2.6_ new <site name> -m <template file>
 #
 # Changes from previous version:
-# - Various fixes
+# - Fixed Facebook login
+# - Fixed certificates for Google login
 #
 # Copyright © 2014-2016 Spotwise 
 #
@@ -80,6 +86,7 @@ gem "role_model"
 gem 'omniauth-facebook' if login_facebook
 gem 'omniauth-twitter' if login_twitter
 gem 'omniauth-linkedin' if login_linkedin
+gem 'google-api-client' if login_google
 gem 'omniauth-google-oauth2' if login_google
 
 run "bundle install"
@@ -466,7 +473,6 @@ inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-FILE
         fb_location:auth.info.location,
         fb_image:auth.info.image,
         fb_nickname:auth.info.nickname,
-        fb_url:auth.info.urls.Facebook,
         fb_gender:auth.extra.raw_info.gender,
         fb_locale:auth.extra.raw_info.locale,
         fb_username:auth.extra.raw_info.username
@@ -1257,6 +1263,15 @@ inject_into_file "config/application.rb", :before => %r{^  end$} do <<-FILE
         Devise::RegistrationsController.layout proc{ |controller| action_name == 'edit' ? "application" : "devise" }
     end
 FILE
+end
+
+if login_google
+  inject_into_file "config/application.rb", :before => %r{^  end$} do <<-FILE
+
+      # Use certificates from the google-api-client gem
+      ENV['SSL_CERT_FILE'] = Gem.loaded_specs['google-api-client'].full_gem_path+'/lib/cacerts.pem'
+  FILE
+  end
 end
 
 remove_file 'README.rdoc'
