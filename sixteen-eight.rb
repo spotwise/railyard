@@ -66,7 +66,7 @@ o365_secret_key_development     = "000000000000"
 
 # Load keys from separate file
 begin
-  require_relative 'development_keys2'
+  require_relative 'development_keys'
 
   facebook_id_development         = DevelopmentKeys::FACEBOOK_ID
   facebook_secret_development     = DevelopmentKeys::FACEBOOK_SECRET
