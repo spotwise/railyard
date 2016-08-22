@@ -20,7 +20,7 @@ The template is known to work on OS X 10.10 and should work on any Linux system.
 
 The quickest way to use the template is to access the template via HTTP:
 
-    rails new SITENAME -m https://github.com/spotwise/railyard/raw/master/sixteen-four.rb
+    rails new SITENAME -m https://github.com/spotwise/railyard/raw/master/sixteen-eight.rb
 
 Replace SITENAME with the name of the project to be created. The Rails system will create a new Ruby on Rails site in the local directory and run the template directly from the web.
 
@@ -49,6 +49,8 @@ For a more extensive description of how to setup a Rails site using this templat
 
 ## History
 
+Note: Updates to both the Ruby language, the Rails framework and the used gems may cause issues with previous versions of the template. Always try to use the latest version first. The template files are named by year and month.
+
 * 2014-08-08 Initial version
 * 2014-10-03 Support for Bootstrap 3
 * 2014-12-20 Added support for Google+
@@ -56,4 +58,4 @@ For a more extensive description of how to setup a Rails site using this templat
 * 2015-02-27 New theme with support for full width hero image
 * 2015-05-28 Various layout fixes
 * 2016-04-03 Updated to work with Rails 4.2.6
-
+* 2016-08-21 Added support for Office 365 authentication

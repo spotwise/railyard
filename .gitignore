@@ -28,3 +28,4 @@ config/secrets.yml
 
 # Development keys
 keys.patch
+development_keys.rb

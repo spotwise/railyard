@@ -1,0 +1,29 @@
+#
+# Copy this file to development_keys.rb and add your own development keys.
+# The template sixteen-eight (or newer templates) will use these keys when
+# setting up the application.
+# 
+# NOTE: It is strongly recommended not to commit this file to source control.
+#
+# Create your keys using the following developer sites:
+#
+#   Facebook: https://developers.facebook.com
+#   Twitter: https://dev.twitter.com
+#   Linkedin: https://www.linkedin.com/secure/developer
+#   Google: https://code.google.com/apis/console/
+#   Office 365: https://manage.windowsazure.com
+#
+
+module DevelopmentKeys
+  FACEBOOK_ID         = "000000000000"
+  FACEBOOK_SECRET     = "000000000000"
+  TWITTER_KEY         = "000000000000"
+  TWITTER_SECRET      = "000000000000"
+  LINKEDIN_API_KEY    = "000000000000"
+  LINKEDIN_SECRET_KEY = "000000000000"
+  GOOGLE_API_KEY      = "000000000000"
+  GOOGLE_SECRET_KEY   = "000000000000"
+  O365_API_KEY        = "000000000000"
+  O365_SECRET_KEY     = "000000000000"
+end
+
