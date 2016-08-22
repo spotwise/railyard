@@ -85,7 +85,6 @@ rescue LoadError
 No custom keys found. Copy the file development_keys.orig.rb to development_keys.rb and define your own keys.
 
 EOS
-  exit
 end
 
 append_file "Gemfile" do <<-'FILE'
