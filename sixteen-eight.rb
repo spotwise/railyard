@@ -28,7 +28,7 @@ login_linkedin = true
 login_google = true
 login_office365 = true
 
-login_oauth = login_facebook || login_twitter || login_linkedin || login_google
+login_oauth = login_facebook || login_twitter || login_linkedin || login_google || login_office365
 
 # TODO: Specify oauth provider keys
 # Facebook: https://developers.facebook.com
