@@ -66,7 +66,7 @@ o365_secret_key_development     = "000000000000"
 
 # Load keys from separate file
 begin
-  require_relative 'development_keys'
+  require_relative 'development_keys2'
 
   facebook_id_development         = DevelopmentKeys::FACEBOOK_ID
   facebook_secret_development     = DevelopmentKeys::FACEBOOK_SECRET
@@ -85,7 +85,6 @@ rescue LoadError
 No custom keys found. Copy the file development_keys.orig.rb to development_keys.rb and define your own keys.
 
 EOS
-  next
 end
 
 append_file "Gemfile" do <<-'FILE'
