@@ -1,5 +1,5 @@
 #
-# Template: Eighteen One
+# Template: Eighteen Two
 #
 # This template sets up a rails project with Bootstrap, some scaffolding 
 # and authentication with support for Facebook, Twitter, Google 
@@ -18,7 +18,10 @@
 #
 
 # TODO: Change as appropriately
-footer = '&copy; <a href="http://www.example.com">Example Inc</a> 2018.'
+application_name = 'Test'
+application_url = "http://www.example.com"
+company_name = "Example Inc"
+copyright_year = "2018"
 
 # TODO: Turn on and off login options
 login_local = true
@@ -52,9 +55,26 @@ google_secret_key_production    = "000000000000"
 o365_api_key_production         = "000000000000"
 o365_secret_key_production      = "000000000000"
 
+# Development keys - these can be reused between applications
+facebook_id_development         = "000000000000"
+facebook_secret_development     = "000000000000"
+twitter_key_development         = "000000000000"
+twitter_secret_development      = "000000000000"
+linkedin_api_key_development    = "000000000000"
+linkedin_secret_key_development = "000000000000"
+google_api_key_development      = "000000000000"
+google_secret_key_development   = "000000000000"
+o365_api_key_development        = "000000000000"
+o365_secret_key_development     = "000000000000"
+
 # Load keys from separate file
 begin
-  require_relative 'development_keys'
+
+  if File.file?(ENV['HOME'] + '/.development_keys.rb')
+    require ENV['HOME'] + '/.development_keys.rb'
+  else
+    require_relative 'development_keys'
+  end
 
   facebook_id_development         = DevelopmentKeys::FACEBOOK_ID
   facebook_secret_development     = DevelopmentKeys::FACEBOOK_SECRET
@@ -74,6 +94,8 @@ No custom keys found. Copy the file development_keys.rb.sample to development_ke
 
 EOS
 end
+
+footer = "&copy; <a href='#{application_url}'>#{company_name}</a> #{copyright_year}."
 
 append_file "Gemfile" do <<-'FILE'
 
@@ -119,11 +141,16 @@ generate(:scaffold, "Author user_id:integer name:string description:text --no-st
 generate(:scaffold, "Book user_id:integer author_id:integer title:string description:text --no-stylesheets")
 generate(:scaffold, "Review user_id:integer book_id:integer comment:text rating:integer --no-stylesheets")
 
+# Migrate database
+rake "db:migrate"
+
 # Add before filter to require login
-all_models.each do |c|
+all_models.sort.each do |c|
   inject_into_file "app/controllers/#{c.tableize}_controller.rb",
       "\n\tbefore_action :authenticate_user!\n\tload_and_authorize_resource\n\n",
       after: "< ApplicationController\n"
+
+      generate('bootstrap:themed', c.pluralize + ' --force')
 end
 
 # Create an ability file
@@ -142,9 +169,6 @@ end
 # Change root page
 route "root to: 'home#index'"
 route "get 'dashboard' => 'dashboard#index'"
-
-# Migrate database
-rake "db:migrate"
 
 # Add roles mask to the user table
 generate(:migration, "AddRolesMaskToUsers roles_mask:integer --force")
@@ -682,13 +706,16 @@ end
 FILE
 end
 
-
-## Bootstrapify scaffolding
-#all_models.each do |c|
-#  generate("bootswatch:themed #{c.pluralize.camelize} --force")
-#end
-
 # Replace application layout file
+
+# First create the menu items based on existing models
+menu_model_items = ""
+# Add before filter to require login
+all_models.sort.each do |c|
+  menu_model_items += "<li class='nav-item'><%= link_to '#{c.pluralize}', '/#{c.pluralize.downcase}', :class => 'nav-link'  %></li>"
+end
+
+# Then create the layout file
 remove_file 'app/views/layouts/application.html.erb'
 create_file 'app/views/layouts/application.html.erb' do <<-FILE
 <!DOCTYPE html>
@@ -698,7 +725,7 @@ create_file 'app/views/layouts/application.html.erb' do <<-FILE
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <title><%= content_for?(:title) ? yield(:title) : "testapp" %></title>
+    <title><%= content_for?(:title) ? yield(:title) : "#{application_name.upcase}" %></title>
     <%= csrf_meta_tags %>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
@@ -714,7 +741,7 @@ create_file 'app/views/layouts/application.html.erb' do <<-FILE
   <body>
     <header>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-      <a class="navbar-brand" href="#">EXAMPLE</a>
+      <a class="navbar-brand" href="#">#{application_name.upcase}</a>
       <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -723,9 +750,7 @@ create_file 'app/views/layouts/application.html.erb' do <<-FILE
         <ul class="navbar-nav mr-auto">
   		    <% if user_signed_in? then -%>
   		    <li class="nav-item"><%= link_to "Home", "/dashboard", :class => "nav-link" %></li>
-  		    <li class="nav-item"><%= link_to "Authors", "/authors", :class => "nav-link"  %></li>
-  		    <li class="nav-item"><%= link_to "Books", "/books", :class => "nav-link" %></li>
-  		    <li class="nav-item"><%= link_to "Reviews", "/reviews", :class => "nav-link" %></li>
+          #{menu_model_items}
   		    <li class="nav-item"><%= link_to "Help", "/#help", :class => "nav-link" %></li>
   		    <% else -%>
   		    <li class="nav-item"><%= link_to "Home", "/", :class => "nav-link" %></li>
@@ -757,7 +782,7 @@ create_file 'app/views/layouts/application.html.erb' do <<-FILE
 
   	<%= yield(:hero) if content_for?(:hero) %>
 
-      <div class="container">
+      <div class="container-fluid">
 		  <div class="row">
 			  <div class="col-lg-12">
 				  <%= bootstrap_flash %>
@@ -767,8 +792,8 @@ create_file 'app/views/layouts/application.html.erb' do <<-FILE
       </div>
     </main>
 
-    <footer class="container text-center">
-          <p>&copy; <a href="http://www.example.com">Example Inc</a> 2018.</p>
+    <footer class="container-fluid text-center">
+          <p>#{footer}</p>
     </footer>      
 
     <!-- Javascripts
@@ -918,14 +943,14 @@ create_file 'app/views/home/index.html.erb' do <<-'FILE'
 
 <% content_for :hero do %>
 <section class="jumbotron">
-	<div class="container">
+	<div class="container-fluid">
 	  <h2>Welcome!</h2>
 	  <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
   </div>
 </section>
 <% end %>
 
-<div class="container">
+<div class="container-fluid">
 	<div class="row">
 		<div class="col-md-4 text-center">
 	    <%= image_tag "bird.jpg", :class => 'rounded-circle', :width => 140, :height => 140, :'data-src' => "holder.js/140x140" %>
@@ -951,7 +976,7 @@ create_file 'app/views/home/index.html.erb' do <<-'FILE'
 <hr/>
 
 <% unless user_signed_in? then -%>
-<div class="container">
+<div class="container-fluid">
 	<div class="row">
 		<div class="col-md-8 text-center">
 			<h2>Sign up or log in now!</h2>
@@ -1169,7 +1194,7 @@ create_file 'app/views/layouts/devise.html.erb' do <<-FILE
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <title><%= content_for?(:title) ? yield(:title) : "TEMPLATE" %></title>
+    <title><%= content_for?(:title) ? yield(:title) : "#{application_name.upcase}" %></title>
     <%= csrf_meta_tags %>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
@@ -1202,7 +1227,7 @@ create_file 'app/views/layouts/devise.html.erb' do <<-FILE
   <body>
 
     <main role="main">
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
           <div class="col-lg-12">
           <br/>
@@ -1212,7 +1237,7 @@ create_file 'app/views/layouts/devise.html.erb' do <<-FILE
             <%= yield %>
           </div>
         </div><!--/row-->
-      </div> <!-- /container -->
+      </div> <!-- /container-fluid -->
     </main>
 
       <footer>
@@ -1231,7 +1256,7 @@ FILE
 end
 
 create_file 'app/views/devise/registrations/edit.html.erb' do <<-FILE
-<div class="container">
+<div class="container-fluid">
 	<div class="row">
 		<div class="span8">
 			<h2>Your profile</h2>
@@ -1357,12 +1382,9 @@ if login_google
   end
 end
 
-remove_file 'README.rdoc'
-create_file 'README.rdoc' do <<-'FILE'
+append_file "README.md" do <<-'FILE'
 
-== README
-
-=== Post creation setup
+## POST CREATION SETUP
 
 This web site was created using a template. Some typical changes will be
 necessary, like changing from numerical input to dropdown boxes:
@@ -1374,30 +1396,6 @@ necessary, like changing from numerical input to dropdown boxes:
   FROM: <%= f.text_field :author_id, :class => 'text_field' %>
   TO  : <%= f.select(:author_id, Author.all.map {|a| [a.name, a.id ]},
     :prompt => t('author.select_user') ) %>
-
-=== Original text
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
 
 FILE
 end
