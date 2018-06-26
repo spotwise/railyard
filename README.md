@@ -20,7 +20,7 @@ The template is known to work on OS X 10.10 and should work on any Linux system.
 
 The quickest way to use the template is to access the template via HTTP:
 
-    rails new SITENAME -m https://github.com/spotwise/railyard/raw/master/sixteen-eight.rb
+    rails new SITENAME -m https://github.com/spotwise/railyard/raw/master/eighteen-two.rb
 
 Replace SITENAME with the name of the project to be created. The Rails system will create a new Ruby on Rails site in the local directory and run the template directly from the web.
 
@@ -37,7 +37,6 @@ The template uses a number of default settings that need to be modified. At the 
 Other settings that may be modified later include:
 
 * API keys for Facebook, Twitter, Linkedin, Google and Office 365
-* Name of Bootswatch theme
 * Colours for navigation bar and links
 * Images on the home page
 * Footer message
@@ -59,3 +58,4 @@ Note: Updates to both the Ruby language, the Rails framework and the used gems m
 * 2015-05-28 Various layout fixes
 * 2016-04-03 Updated to work with Rails 4.2.6
 * 2016-08-21 Added support for Office 365 authentication
+* 2018-03-02 Rewritten to use Rails 5.x and Bootstrap 4.x
