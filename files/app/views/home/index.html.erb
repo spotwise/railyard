@@ -1,0 +1,47 @@
+
+<% content_for :hero do %>
+<section class="jumbotron">
+	<div class="container-fluid">
+	  <h2>Welcome!</h2>
+	  <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+  </div>
+</section>
+<% end %>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-4 text-center">
+	    <%= image_tag "bird.jpg", :class => 'rounded-circle', :width => 140, :height => 140, :'data-src' => "holder.js/140x140" %>
+			<h2>Feature 1</h2>
+			<p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.</p>
+			<p><a class="btn btn-secondary" href="#">View details »</a></p>
+		</div>
+		<div class="col-md-4 text-center">
+    <%= image_tag "seaweed.jpg", :class => 'rounded-circle', :width => 140, :height => 140, :'data-src' => "holder.js/140x140" %>
+			<h2>Feature 2</h2>
+			<p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+			<p><a class="btn btn-secondary" href="#">View details »</a></p>
+		</div>
+		<div class="col-md-4 text-center">
+    <%= image_tag "shells.jpg", :class => 'rounded-circle', :width => 140, :height => 140, :'data-src' => "holder.js/140x140" %>
+			<h2>Feature 3</h2>
+			<p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+			<p><a class="btn btn-secondary" href="#">View details »</a></p>
+		</div>
+	</div><!-- /.row -->
+</div>
+
+<hr/>
+
+<% unless user_signed_in? then -%>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-8 text-center">
+			<h2>Sign up or log in now!</h2>
+		</div>
+		<div class="col-md-4 text-center">
+			<a style="margin-top:10px;" href="/users/sign_in/" class="btn btn-lg btn-primary">Get Started</a>
+		</div>
+	</div>
+</div>
+<% end -%>

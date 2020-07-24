@@ -1,0 +1,9 @@
+#gem 'sqlite3'
+# Use Sqlite3 for development and testing
+group :developmemnt, :test do
+  gem 'sqlite3'
+end
+# Use PostgreSQL (for Heroku)
+group :production, :staging do
+  gem 'pg'
+end

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <title><%= content_for?(:title) ? yield(:title) : "#{@settings[:application_name].upcase}" %></title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= yield(:page_stylesheet) if content_for?(:page_stylesheet) %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+  </head>
+  <body>
+    <header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <a class="navbar-brand" href="#">#{@settings[:application_name].upcase}</a>
+      <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="navbar-collapse collapse" id="navbarsExampleDefault" style="">
+        <ul class="navbar-nav mr-auto">
+  		    <% if user_signed_in? then -%>
+  		    <li class="nav-item"><%= link_to "Home", "/dashboard", :class => "nav-link" %></li>
+          #{@settings[:menu]}
+  		    <li class="nav-item"><%= link_to "Help", "/#help", :class => "nav-link" %></li>
+  		    <% else -%>
+  		    <li class="nav-item"><%= link_to "Home", "/", :class => "nav-link" %></li>
+  		    <li class="nav-item"><%= link_to "Features", "/#features", :class => "nav-link" %></li>
+  		    <% end -%>
+
+        </ul>
+      
+        <ul class="nav navbar-nav navbar-right">
+    		    <% if user_signed_in? then -%>
+    			<li class="hidden-phone hidden-tablet"><%= image_tag current_user.avatar, :size => "32x32", :class => "rounded-circle", :style => "margin-top:4px;margin-left:16px;margin-right:4px" %></li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= current_user.username %></a>
+                <div class="dropdown-menu" aria-labelledby="dropdown01">
+                  <%= link_to "Profile", '/users/edit', :class => 'dropdown-item' %>
+                  <%= link_to "Sign out", '/users/sign_out', :method => :delete, :class => 'dropdown-item' %>
+                </div>
+                </li>
+    		    <% else -%>
+    		      <li class="nav-item"><%= link_to "Sign in", '/users/sign_in', :class => "nav-link" %></li>
+    		    <% end -%>
+    			</ul>
+  
+      </div>
+    </nav>
+    </header>
+
+    <main role="main">
+
+  	<%= yield(:hero) if content_for?(:hero) %>
+
+      <div class="container-fluid">
+		  <div class="row">
+			  <div class="col-lg-12">
+				  <%= yield %>
+			  </div>
+		  </div>
+      </div>
+    </main>
+
+    <footer class="container-fluid text-center">
+          <p>#{@settings[:footer]}</p>
+    </footer>      
+
+    <!-- Javascripts
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <%= yield(:page_javascript) if content_for?(:page_javascript) %>
+  </body>
+</html>

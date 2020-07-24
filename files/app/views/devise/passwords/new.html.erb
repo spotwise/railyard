@@ -1,0 +1,22 @@
+<br/><br/><div class="row">
+	<div class="col-sm-6 offset-sm-3 col-md-4 offset-md-4 col-lg-4 offset-lg-4">
+		<h2>Reset password</h2>
+		<%= form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :post }) do |f| %>
+  			<%= devise_error_messages! %>
+  			<%= f.email_field :email, :autofocus => true, :placeholder => "Email", :style => "width:100%;box-sizing:border-box;height:44px;padding: 9px 9px;font-size: 17.5px;" %><br/><br/>
+			<%= f.submit "Send instructions", :class => "btn btn-primary btn-lg" %>
+		<% end %>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-lg-8 offset-lg-2">
+		<hr/>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm-6 offset-sm-3 col-md-4 offset-md-4 col-lg-4 offset-lg-4">
+		<a class="btn btn-secondary btn-lg btn-block" href="/users/sign_in">Back</a>
+	</div>
+</div>
