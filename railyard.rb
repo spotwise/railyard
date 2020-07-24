@@ -131,6 +131,16 @@ def create_dir(source)
   FileUtils.mkdir_p(File.dirname(source))
 end
 
+# Read the contents from a file or from a URL
+def read_uri(source)
+  if source.match?(%r{https?://.*})
+    uri = URI.parse(source)
+    return uri.read
+  else
+    return File.read(source)
+  end
+end
+
 # Helper method return the full path for supplementary files
 def get_file_uri(source)
   return File.join(File.dirname(__FILE__), 'files/') + source if ENV['RAILS_TEMPLATE_DEBUG'].present?
@@ -140,7 +150,7 @@ end
 # Get the file contents, performing string interpolation
 def get_file_contents(source)
   uri = get_file_uri(source)
-  eval("\"" + File.read(uri).gsub(/"/, '\"') + "\"")
+  eval("\"" + read_uri(uri).gsub(/"/, '\"') + "\"")
 end
 
 # Get a file, performing string interpolation
@@ -151,7 +161,7 @@ def get_file(source, destination = nil, binary = false)
   if binary
     get(uri,destination, force: true)
   else
-    File.write(destination, eval("\"" + File.read(uri).gsub(/"/, '\"') + "\""))
+    File.write(destination, eval("\"" + read_uri(uri).gsub(/"/, '\"') + "\""))
   end
 end
 
