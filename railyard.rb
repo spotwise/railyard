@@ -186,7 +186,7 @@ gem 'role_model'
 gem 'omniauth-oauth2' if login_oauth
 gem 'omniauth-facebook' if login_facebook
 gem 'omniauth-twitter' if login_twitter
-gem 'omniauth-linkedin' if login_linkedin
+gem 'omniauth-linkedin-oauth2' if login_linkedin
 gem 'google-api-client' if login_google
 gem 'omniauth-google-oauth2' if login_google
 gem 'omniauth-office365' if login_office365
