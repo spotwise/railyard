@@ -189,7 +189,7 @@ gem 'omniauth-twitter' if login_twitter
 gem 'omniauth-linkedin-oauth2' if login_linkedin
 gem 'google-api-client' if login_google
 gem 'omniauth-google-oauth2' if login_google
-gem 'omniauth-office365' if login_office365
+gem 'omniauth-microsoft-office365' if login_office365
 
 run 'bundle install'
 run 'yarn add bootstrap jquery popper.js'
@@ -311,7 +311,7 @@ providers << ":facebook" if login_facebook
 providers << ":twitter" if login_twitter
 providers << ":linkedin" if login_linkedin
 providers << ":google_oauth2" if login_google
-providers << ":office365" if login_office365
+providers << ":microsoft_office365" if login_office365
 
 # Omniauth (https://github.com/plataformatec/devise/wiki/OmniAuth:-Overview)
 if login_oauth

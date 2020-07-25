@@ -1,5 +1,5 @@
 
-  def office365
+  def microsoft_office365
     # You need to implement the method below in your model (e.g. app/models/user.rb)
     puts request.env["omniauth.auth"]
   
