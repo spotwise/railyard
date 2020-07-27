@@ -297,7 +297,7 @@ end
 run "bundle install"
 
 # Add PostgreSQL in production for Heroku
-gsub_file 'Gemfile', %r{gem 'sqlite3'.*$}, get_file_contents('Gemfile')
+gsub_file 'Gemfile', %r{gem 'sqlite3'.*$}, get_file_contents('_Gemfile')
 
 # Define API keys for the various OAuth providers. These keys are edited at the top of this file
 inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_facebook.rb'), :before => %r{^end$} if login_facebook
