@@ -333,7 +333,7 @@ username = []
 username << "name" if login_local
 username << "fb_name" if login_facebook
 username << "twitter_name" if login_twitter
-username << "li_name" if login_twitter
+username << "li_name" if login_linkedin
 username << "go_name" if login_google
 username << "o3_name" if login_office365
 username << '"<no name>"'
