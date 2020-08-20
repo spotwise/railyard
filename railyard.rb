@@ -179,7 +179,7 @@ end
 append_file "Gemfile", "\n# Install gems"
 
 gem 'font-awesome-rails'
-gem 'bootstrap-sass-extras'
+gem "twitter-bootstrap-rails"
 gem 'devise'
 gem 'cancancan'
 gem 'role_model'
@@ -368,7 +368,7 @@ end
 # First create the menu items based on existing models
 menu_model_items = ""
 all_models.sort.each do |c|
-  menu_model_items += "<li class='nav-item'><%= link_to '#{c.pluralize}', '/#{c.pluralize.downcase}', :class => 'nav-link'  %></li>"
+  menu_model_items += "<li class='nav-item'><%= link_to '#{c.pluralize}', '/#{c.tableize}', :class => 'nav-link'  %></li>"
 end
 
 @settings[:footer] = footer
