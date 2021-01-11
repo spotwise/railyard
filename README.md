@@ -22,7 +22,7 @@ The quickest way to use the template is to access the template via HTTP:
 
     rails new SITENAME -m https://github.com/spotwise/railyard/raw/master/railyard.rb
 
-Replace SITENAME with the name of the project to be created. The Rails system will create a new Ruby on Rails site in the local directory and run the template directly from the web.
+Replace SITENAME with the name of the project to be created. The Rails system will create a new Ruby on Rails site in the local directory and run the template directly from the web. N.B. The above line will not work in Ruby 3.0.0 due to breaking changes that have not yet been fixed in the underlying framework. Until this has been fixed the Ruby 2.7 branch can be used.
 
 Once the site has been created, then change to the site directory and run
 
