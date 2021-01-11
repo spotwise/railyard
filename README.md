@@ -14,7 +14,7 @@ This project depends on the following:
 * Rails
 * Command line support for wget
 
-The template is known to work on OS X 10.15 and should work on any Linux system. Most likely it does not work on Windows due to the use of typical OS X / Linux commands. 
+The template is known to work on OS X 11.1 and should work on any Linux system. Most likely it does not work on Windows due to the use of typical OS X / Linux commands. 
 
 ## Usage
 
@@ -42,6 +42,8 @@ Other settings that may be modified later include:
 * Footer message
 * Site logo
 
+The repository includes a sample file for development keys. This should be copied to your home directory with the name .development_keys.rb (i.e. hidden) and updated with the sample keys. They are then used during application setup which simplifies the setup when reusing this template for different applications.
+
 Once the template has been modified to your satisfaction then run the above command but change the URI to the path to the modified file.
 
 For a more extensive description of how to setup a Rails site using this template, please refer to http://www.spotwise.com/2015/01/04/create-a-web-site-in-53-seconds/.
@@ -60,3 +62,4 @@ Note: Updates to both the Ruby language, the Rails framework and the used gems m
 * 2016-08-21 Added support for Office 365 authentication
 * 2018-03-02 Rewritten to use Rails 5.x and Bootstrap 4.x
 * 2020-07-24 Completely rewritten to use Rails 6.x
+* 2021-01-10 Completely rewritten to use Rails 6.1 and Bootstrap 5

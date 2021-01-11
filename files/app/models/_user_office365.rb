@@ -21,7 +21,7 @@
       return user
     end
   
-    user.update_attributes(
+    user.update(
         o3_uid:auth.uid,
         o3_email:auth.info.email,
         o3_name:auth.info.name,

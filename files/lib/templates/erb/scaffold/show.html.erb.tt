@@ -1,0 +1,35 @@
+<%%- model_class = <%= singular_table_name.titleize %> -%>
+<div class="page-header">
+  <h1><%%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+
+<%% if notice %>
+<div id="notice" class="alert alert-secondary" role="alert">
+  <%%= notice %>
+</div>
+<%% end %>
+
+<% attributes.reject(&:password_digest?).each do |attribute| -%>
+
+<dl class="dl-horizontal">
+  <dt><strong><%= attribute.human_name %>:</strong></dt>
+<% if attribute.attachment? -%>
+  <dl><%%= link_to @<%= singular_table_name %>.<%= attribute.column_name %>.filename, @<%= singular_table_name %>.<%= attribute.column_name %> if @<%= singular_table_name %>.<%= attribute.column_name %>.attached? %></dl>
+<% elsif attribute.attachments? -%>
+  <dl><%% @<%= singular_table_name %>.<%= attribute.column_name %>.each do |<%= attribute.singular_name %>| %>
+    <div><%%= link_to <%= attribute.singular_name %>.filename, <%= attribute.singular_name %> %></div>
+  <%% end %></dl>
+<% else -%>
+  <dl><%%= @<%= singular_table_name %>.<%= attribute.column_name %> %></dl>
+<% end -%>
+</dl>
+
+<% end -%>
+
+<%%= link_to t('.back', :default => t("helpers.links.back")), <%= plural_table_name %>_path, :class => 'btn btn-secondary'  %>
+<%%= link_to t('.edit', :default => t("helpers.links.edit")), edit_<%= singular_table_name %>_path(@<%= singular_table_name %>), :class => 'btn btn-secondary' %>
+<%%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+              <%= singular_table_name %>_path(@<%= singular_table_name %>),
+              :method => 'delete',
+              :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+              :class => 'btn btn-danger' %>

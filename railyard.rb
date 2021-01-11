@@ -5,14 +5,12 @@
 # and authentication with support for Facebook, Twitter, Google, Linkedin
 # and Office365 login.
 #
-# Note: Webpacker needs to be installed:
-#
-#   bundle exec rake webpacker:install
-#
 # Changes from previous version:
-# - Completely rewritten to use Rails 6 and Bootstrap 4
+# - Completely rewritten to use Rails 6.1 and Bootstrap 5
+# - Verified with Ruby 3.0, Rails 6.1, rbenv 1.1.2, npm 7.3.
+# - Bootstrap compatible scaffolding views
 #
-# Copyright © 2014-2020 Spotwise
+# Copyright © 2014-2021 Spotwise
 #
 # Check the following web pages for information on how to setup
 # authentication for each identity provider.
@@ -29,19 +27,18 @@
 # Production keys need to be unique for this application while
 # development keys can be reused between applications
 
-
 # TODO Configure settings
 @settings = {
   application_name:               "Test",
   application_url:                "http://www.example.com",
   company_name:                   "Example Inc",
-  copyright_year:                 "2020",
+  copyright_year:                 "2021",
   login_local:                    true,
   login_facebook:                 true,
   login_twitter:                  true,
   login_linkedin:                 true,
   login_google:                   true,
-  login_office365:                true,
+  login_office365:                false,
   facebook_id_production:         "000000000000",
   facebook_secret_production:     "000000000000",
   twitter_key_production:         "000000000000",
@@ -64,6 +61,54 @@
   o365_secret_key_development:    "000000000000"
 }
 
+run 'bundle install'
+
+# Create the directory structure for the provided file path to avoid file creation failing when copying files
+def create_dir(source)
+  FileUtils.mkdir_p(File.dirname(source))
+end
+
+# Read the contents from a file or from a URL
+def read_uri(source)
+  if source.match?(%r{https?://.*})
+    uri = URI.parse(source)
+    return uri.read
+  else
+    return File.read(source)
+  end
+end
+
+# Helper method return the full path for supplementary files
+def get_file_uri(source)
+  return File.join(File.dirname(__FILE__), 'files/') + source if ENV['RAILS_TEMPLATE_DEBUG'].present?
+  return 'https://raw.githubusercontent.com/spotwise/railyard/master/files/' + source
+end
+
+# Get the file contents, performing string interpolation
+def get_file_contents(source)
+  uri = get_file_uri(source)
+  eval("\"" + read_uri(uri).gsub(/"/, '\"') + "\"")
+end
+
+# Get a file, performing string interpolation
+def get_file(source, destination = nil, binary = false)
+  destination ||= source
+  create_dir(destination)
+  uri = get_file_uri(source)
+  if binary
+    get(uri,destination, force: true)
+  else
+    File.write(destination, eval("\"" + read_uri(uri).gsub(/"/, '\"') + "\""))
+  end
+end
+
+inject_into_file "config/application.rb", get_file_contents('config/_application_generators.rb'), :before => %r{^  end$}
+get_file 'lib/templates/erb/scaffold/_form.html.erb.tt'
+get_file 'lib/templates/erb/scaffold/edit.html.erb.tt'
+get_file 'lib/templates/erb/scaffold/index.html.erb.tt'
+get_file 'lib/templates/erb/scaffold/new.html.erb.tt'
+get_file 'lib/templates/erb/scaffold/show.html.erb.tt'
+
 # Create scaffolding
 # TODO: Create an application specific data model instead of Author -> Books -> Reviews
 generate(:controller, "home index")
@@ -71,7 +116,6 @@ generate(:controller, "dashboard index")
 generate(:scaffold, "Author user_id:integer name:string description:text --no-stylesheets")
 generate(:scaffold, "Book user_id:integer author_id:integer title:string description:text --no-stylesheets")
 generate(:scaffold, "Review user_id:integer book_id:integer comment:text rating:integer --no-stylesheets")
-
 
 ########## NO CHANGES REQUIRED BELOW THIS LINE ##########
 #########################################################
@@ -126,45 +170,6 @@ def login_oauth
   login_facebook || login_twitter || login_linkedin || login_google || login_office365
 end
 
-# Create the directory structure for the provided file path to avoid file creation failing when copying files
-def create_dir(source)
-  FileUtils.mkdir_p(File.dirname(source))
-end
-
-# Read the contents from a file or from a URL
-def read_uri(source)
-  if source.match?(%r{https?://.*})
-    uri = URI.parse(source)
-    return uri.read
-  else
-    return File.read(source)
-  end
-end
-
-# Helper method return the full path for supplementary files
-def get_file_uri(source)
-  return File.join(File.dirname(__FILE__), 'files/') + source if ENV['RAILS_TEMPLATE_DEBUG'].present?
-  return 'https://raw.githubusercontent.com/spotwise/railyard/master/files/' + source
-end
-
-# Get the file contents, performing string interpolation
-def get_file_contents(source)
-  uri = get_file_uri(source)
-  eval("\"" + read_uri(uri).gsub(/"/, '\"') + "\"")
-end
-
-# Get a file, performing string interpolation
-def get_file(source, destination = nil, binary = false)
-  destination ||= source
-  create_dir(destination)
-  uri = get_file_uri(source)
-  if binary
-    get(uri,destination, force: true)
-  else
-    File.write(destination, eval("\"" + read_uri(uri).gsub(/"/, '\"') + "\""))
-  end
-end
-
 # Get a list of all the user defined models
 def all_models
   Dir.glob("app/models/*.rb").map { |x|
@@ -178,8 +183,6 @@ end
 
 append_file "Gemfile", "\n# Install gems"
 
-gem 'font-awesome-rails'
-gem "twitter-bootstrap-rails"
 gem 'devise'
 gem 'cancancan'
 gem 'role_model'
@@ -192,25 +195,13 @@ gem 'omniauth-google-oauth2' if login_google
 gem 'omniauth-microsoft-office365' if login_office365
 
 run 'bundle install'
-run 'yarn add bootstrap jquery popper.js'
-generate 'bootstrap:install'
 
-# Add support for Bootstrap & jQuery
-after_bundle do
-  inject_into_file "config/webpack/environment.js", get_file_contents('config/webpack/_environment.js'), :before => %r{^module.exports}
-end
-
-inject_into_file "app/javascript/packs/application.js", :before => /^require\("@rails\/ujs"\)\.start\(\)/ do <<-FILE
-import 'bootstrap'
-FILE
-end
+run 'yarn add bootstrap@next'
+run 'yarn add @popperjs/core'
+run 'yarn add @fortawesome/fontawesome-free'
 
 run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss"
 append_file 'app/assets/stylesheets/application.scss', "#{get_file_contents('app/assets/stylesheets/_application.scss')}"
-inject_into_file "app/assets/stylesheets/application.scss", :before => /^ \*= require_tree \./ do <<-FILE
- *= require bootstrap
-FILE
-end
 
 # Setup Devise
 generate("devise:install")
@@ -380,8 +371,9 @@ get_file 'app/views/layouts/application.html.erb'
 # Download Bootstrap social icons
 run "wget -O app/assets/stylesheets/bootstrap-social.css https://github.com/lipis/bootstrap-social/raw/gh-pages/bootstrap-social.css"
 
-inject_into_file 'app/assets/stylesheets/application.scss', get_file_contents('app/assets/stylesheets/_application_require.scss'), :before => " *= require_self"
-append_file 'app/assets/stylesheets/application.scss', "#{get_file_contents('app/assets/stylesheets/_application.scss')}"
+###FIX File unchanged! The supplied flag value not found!    app/assets/stylesheets/application.scss
+#inject_into_file 'app/assets/stylesheets/application.scss', get_file_contents('app/assets/stylesheets/_application_require.scss'), :before => " *= require_self"
+#append_file 'app/assets/stylesheets/application.scss', "#{get_file_contents('app/assets/stylesheets/_application.scss')}"
 
 # Redirect user to dashboard after having logged in
 inject_into_file 'app/controllers/application_controller.rb', get_file_contents('app/controllers/_application_controller.rb'), :before => %r{^end$}
@@ -399,8 +391,9 @@ get_file 'app/assets/images/apple-touch-icon-114x114-precomposed.png', nil, true
 get_file 'app/assets/images/apple-touch-icon-144x144-precomposed.png', nil, true
 get_file 'app/assets/images/apple-touch-icon-precomposed.png', nil, true
 
-# Add custom Javascript
+# Add custom Javascript and stylesheets
 append_file 'app/javascript/packs/application.js', get_file_contents('app/javascript/packs/_application.js')
+get_file 'app/javascript/stylesheets/application.scss'
 
 # Replace the home page
 get_file 'app/views/home/index.html.erb'
@@ -438,7 +431,3 @@ inject_into_file "config/application.rb", get_file_contents('config/_application
 
 append_file "README.md", get_file_contents('_README.md')
 
-# Change from 'btn-default' to 'default-secondary' in all views
-Dir.glob("app/views/*/*.html.erb").each do |f|
-  gsub_file f, %r{btn-default}, "btn-secondary"
-end

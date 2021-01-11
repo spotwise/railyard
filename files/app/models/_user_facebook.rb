@@ -20,7 +20,7 @@
       return user
     end
   
-    user.update_attributes(
+    user.update(
         fb_uid:auth.uid,
         fb_email:auth.info.email,
         fb_first_name:auth.info.first_name,

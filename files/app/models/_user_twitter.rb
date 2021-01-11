@@ -19,7 +19,7 @@
       return user
     end
   
-    user.update_attributes(
+    user.update(
           twitter_uid:auth.uid,
           twitter_name:auth.info.name,
           twitter_nickname:auth.info.nickname,

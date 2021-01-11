@@ -1,3 +1,9 @@
-	<div style="width:200px;float:left;margin-right:30px">
-	<a class="btn btn-block btn-social btn-google <%= "disabled" if current_user.has_google? %>" href="/users/auth/google_oauth2"><span class="fa fa-google-plus"></span>Google+</a>
-	</div>
+  <div style="width:150px;float:left">
+    <% if current_user.has_google? %>
+    <button type="button" class="btn btn-sm btn-social" style="color:white;background:#DD4B39" disabled><i class="fa fa-google-plus"></i>Google</button>
+    <% else %>
+    <a href="/users/auth/google_oauth2">
+      <button type="button" class="btn btn-sm btn-social" style="color:white;background:#DD4B39"><i class="fa fa-google-plus"></i>Google</button>
+    </a>
+    <% end %>
+  </div>

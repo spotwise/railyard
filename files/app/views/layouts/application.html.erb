@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <title><%= content_for?(:title) ? yield(:title) : "#{@settings[:application_name].upcase}" %></title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -12,46 +12,50 @@
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= yield(:page_stylesheet) if content_for?(:page_stylesheet) %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
-
+    <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
   </head>
   <body>
     <header>
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-      <a class="navbar-brand" href="#">#{@settings[:application_name].upcase}</a>
-      <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+      <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">#{@settings[:application_name].upcase}</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav w-100">
+              <% if user_signed_in? then -%>
+              <li class="nav-item"><%= link_to "Home", "/dashboard", :class => "nav-link" %></li>
+              #{@settings[:menu]}
+              <li class="nav-item"><%= link_to "Help", "/#help", :class => "nav-link" %></li>
+              <% else -%>
+              <li class="nav-item"><%= link_to "Home", "/", :class => "nav-link" %></li>
+              <li class="nav-item"><%= link_to "Features", "/#features", :class => "nav-link" %></li>
+              <% end -%>
 
-      <div class="navbar-collapse collapse" id="navbarsExampleDefault" style="">
-        <ul class="navbar-nav mr-auto">
-  		    <% if user_signed_in? then -%>
-  		    <li class="nav-item"><%= link_to "Home", "/dashboard", :class => "nav-link" %></li>
-          #{@settings[:menu]}
-  		    <li class="nav-item"><%= link_to "Help", "/#help", :class => "nav-link" %></li>
-  		    <% else -%>
-  		    <li class="nav-item"><%= link_to "Home", "/", :class => "nav-link" %></li>
-  		    <li class="nav-item"><%= link_to "Features", "/#features", :class => "nav-link" %></li>
-  		    <% end -%>
+              <li class="nav-item ms-auto"></li>
 
-        </ul>
-      
-        <ul class="nav navbar-nav navbar-right">
-    		    <% if user_signed_in? then -%>
-    			<li class="hidden-phone hidden-tablet"><%= image_tag current_user.avatar, :size => "32x32", :class => "rounded-circle", :style => "margin-top:4px;margin-left:16px;margin-right:4px" %></li>
+              <% if user_signed_in? then -%>
+              <li class="nav-item d-none d-md-block"><%= image_tag current_user.avatar, :size => "32x32", :class => "rounded-circle", :style => "margin-top:4px;margin-left:16px;margin-right:4px" %></li>
               <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= current_user.username %></a>
-                <div class="dropdown-menu" aria-labelledby="dropdown01">
-                  <%= link_to "Profile", '/users/edit', :class => 'dropdown-item' %>
-                  <%= link_to "Sign out", '/users/sign_out', :method => :delete, :class => 'dropdown-item' %>
-                </div>
-                </li>
-    		    <% else -%>
-    		      <li class="nav-item"><%= link_to "Sign in", '/users/sign_in', :class => "nav-link" %></li>
-    		    <% end -%>
-    			</ul>
-  
-      </div>
-    </nav>
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <%= current_user.username %>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><%= link_to "Profile", '/users/edit', :class => 'dropdown-item' %></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><%= link_to "Sign out", '/users/sign_out', :method => :delete, :class => 'dropdown-item' %></li>
+                </ul>
+              </li>
+              <% else -%>
+              <li class="nav-item"><%= link_to "Sign in", '/users/sign_in', :class => "nav-link" %></li>
+              <% end -%>
+
+            </ul>
+          </div>
+        </div>
+      </nav>
+
     </header>
 
     <main role="main">

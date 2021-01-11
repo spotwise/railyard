@@ -21,7 +21,7 @@
       return user
     end
   
-    user.update_attributes(
+    user.update(
         li_uid:auth.uid,
         li_email:auth.info.email,
         li_first_name:auth.info.first_name,

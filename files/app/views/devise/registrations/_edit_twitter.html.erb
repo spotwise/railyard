@@ -1,3 +1,9 @@
-	<div style="width:200px;float:left;margin-right:30px">
-	<a class="btn btn-block btn-social btn-twitter <%= "disabled" if current_user.has_twitter? %>" href="/users/auth/twitter"><span class="fa fa-twitter"></span>Twitter</a>
-	</div>
+  <div style="width:150px;float:left">
+    <% if current_user.has_twitter? %>
+    <button type="button" class="btn btn-sm btn-social" style="color:white;background:#55ACEE" disabled><i class="fa fa-twitter"></i>Twitter</button>
+    <% else %>
+    <a href="/users/auth/twitter">
+      <button type="button" class="btn btn-sm btn-social" style="color:white;background:#55ACEE"><i class="fa fa-twitter"></i>Twitter</button>
+    </a>
+    <% end %>
+  </div>

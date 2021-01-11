@@ -1,3 +1,9 @@
-  <div style="width:200px;float:left;margin-right:30px">
-  <a class="btn btn-block btn-social btn-microsoft <%= "disabled" if current_user.has_office365? %>" href="/users/auth/microsoft_office365"><span class="fa fa-windows"></span>Office 365</a>
+  <div style="width:150px;float:left">
+    <% if current_user.has_office365? %>
+    <button type="button" class="btn btn-sm btn-social" style="color:white;background:#2672EC" disabled><i class="fa fa-windows"></i>Microsoft</button>
+    <% else %>
+    <a href="/users/auth/microsoft_office365">
+      <button type="button" class="btn btn-sm btn-social" style="color:white;background:#2672EC"><i class="fa fa-windows"></i>Microsoft</button>
+    </a>
+    <% end %>
   </div>
