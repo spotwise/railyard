@@ -117,6 +117,8 @@ generate(:scaffold, "Author user_id:integer name:string description:text --no-st
 generate(:scaffold, "Book user_id:integer author_id:integer title:string description:text --no-stylesheets")
 generate(:scaffold, "Review user_id:integer book_id:integer comment:text rating:integer --no-stylesheets")
 
+
+
 ########## NO CHANGES REQUIRED BELOW THIS LINE ##########
 #########################################################
 
@@ -210,13 +212,29 @@ generate(:devise, "User")
 # Migrate database
 rake "db:migrate"
 
-# Add before filter to require login
+# Add before filter to require login and ensure that tests pass
 all_models.sort.each do |c|
   inject_into_file "app/controllers/#{c.tableize}_controller.rb",
       "\n\tbefore_action :authenticate_user!\n\tload_and_authorize_resource\n\n",
       after: "< ApplicationController\n"
-      generate('bootstrap:themed', c.pluralize + ' --force')
+
+  inject_into_file "test/controllers/#{c.tableize}_controller_test.rb",
+      "\n  include Devise::Test::IntegrationHelpers\n\n",
+      after: "ActionDispatch::IntegrationTest\n"
+
+  inject_into_file "test/controllers/#{c.tableize}_controller_test.rb",
+      "    sign_in users(:one)\n",
+      after: "setup do\n"
+
 end
+
+gsub_file 'test/fixtures/users.yml', %r{^one:}, '#one:'
+gsub_file 'test/fixtures/users.yml', %r{^two:}, '#two:'
+append_file 'test/fixtures/users.yml', "#{get_file_contents('test/fixtures/_users.yml')}"
+
+inject_into_file "test/controllers/dashboard_controller_test.rb",
+    "#{get_file_contents('test/controllers/_dashboard_controller_test.rb')}",
+    after: "ActionDispatch::IntegrationTest\n"
 
 # Create an ability file
 get_file 'app/models/ability.rb'
@@ -430,4 +448,3 @@ inject_into_file "config/application.rb", get_file_contents('config/_application
 inject_into_file "config/application.rb", get_file_contents('config/_application_google.rb'), :before => %r{^  end$} if login_google
 
 append_file "README.md", get_file_contents('_README.md')
-
