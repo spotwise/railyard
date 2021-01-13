@@ -63,3 +63,4 @@ Note: Updates to both the Ruby language, the Rails framework and the used gems m
 * 2018-03-02 Rewritten to use Rails 5.x and Bootstrap 4.x
 * 2020-07-24 Completely rewritten to use Rails 6.x
 * 2021-01-10 Completely rewritten to use Rails 6.1 and Bootstrap 5
+

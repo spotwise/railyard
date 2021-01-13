@@ -118,7 +118,6 @@ generate(:scaffold, "Book user_id:integer author_id:integer title:string descrip
 generate(:scaffold, "Review user_id:integer book_id:integer comment:text rating:integer --no-stylesheets")
 
 
-
 ########## NO CHANGES REQUIRED BELOW THIS LINE ##########
 #########################################################
 
@@ -196,6 +195,12 @@ gem 'google-api-client' if login_google
 gem 'omniauth-google-oauth2' if login_google
 gem 'omniauth-microsoft-office365' if login_office365
 
+gem 'rswag'
+gem_group :development, :test do
+  gem 'rspec-rails'
+  gem 'rswag-specs'
+end
+
 run 'bundle install'
 
 run 'yarn add bootstrap@next'
@@ -228,6 +233,10 @@ all_models.sort.each do |c|
 
 end
 
+inject_into_file "app/controllers/dashboard_controller.rb",
+    "\n\tbefore_action :authenticate_user!\n\n",
+    after: "< ApplicationController\n"
+
 gsub_file 'test/fixtures/users.yml', %r{^one:}, '#one:'
 gsub_file 'test/fixtures/users.yml', %r{^two:}, '#two:'
 append_file 'test/fixtures/users.yml', "#{get_file_contents('test/fixtures/_users.yml')}"
@@ -235,6 +244,20 @@ append_file 'test/fixtures/users.yml', "#{get_file_contents('test/fixtures/_user
 inject_into_file "test/controllers/dashboard_controller_test.rb",
     "#{get_file_contents('test/controllers/_dashboard_controller_test.rb')}",
     after: "ActionDispatch::IntegrationTest\n"
+
+
+# Add support for Swagger
+generate('rswag:specs:install')
+generate('rswag:api:install')
+generate('rswag:ui:install')
+generate('rspec:install')
+
+all_models.sort.each do |c|
+  generate("rspec:swagger API::V1::#{c.pluralize}_Controller")
+end
+
+run('rails rswag:specs:swaggerize')
+
 
 # Create an ability file
 get_file 'app/models/ability.rb'
