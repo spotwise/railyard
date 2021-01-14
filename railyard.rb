@@ -231,6 +231,14 @@ all_models.sort.each do |c|
       "    sign_in users(:one)\n",
       after: "setup do\n"
 
+  inject_into_file "test/system/#{c.tableize}_test.rb",
+      "\n  include Devise::Test::IntegrationHelpers\n\n",
+      after: "ApplicationSystemTestCase\n"
+
+  inject_into_file "test/system/#{c.tableize}_test.rb",
+      "    sign_in users(:one)\n",
+      after: "setup do\n"
+
 end
 
 inject_into_file "app/controllers/dashboard_controller.rb",
