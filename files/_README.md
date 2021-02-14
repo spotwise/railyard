@@ -43,3 +43,19 @@ necessary:
           <%= form.label :enabled, class: "form-check-label" %>
         </div>
       </div>
+
+#### Date fields
+
+**From:**
+
+    <div class="mb-3">
+      <%= form.label :start_date, class: "form-label" %>
+      <%= form.date_select :start_date, class: "form-control" %>
+    </div>
+
+**To:**
+
+    <div class="mb-3">
+      <%= form.label :start_date, class: "form-label" %>
+      <%= form.date_field :start_date, class: "form-control" %>
+    </div>
