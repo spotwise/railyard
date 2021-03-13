@@ -1,8 +1,8 @@
   <div style="width:150px;float:left">
-    <% if current_user.has_office365? %>
+    <% if current_user.has_microsoft? %>
     <button type="button" class="btn btn-sm btn-social" style="color:white;background:#2672EC" disabled><i class="fa fa-windows"></i>Microsoft</button>
     <% else %>
-    <a href="/users/auth/microsoft_office365">
+    <a href="/users/auth/azure_activedirectory_v2">
       <button type="button" class="btn btn-sm btn-social" style="color:white;background:#2672EC"><i class="fa fa-windows"></i>Microsoft</button>
     </a>
     <% end %>

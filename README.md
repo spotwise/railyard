@@ -3,9 +3,9 @@
 This repository contains tools to quickly set up new Ruby on Rails projects. Most importantly it includes templates to setup a new Rails project with support for:
 
 * Responsive design based on Twitter Bootstrap
-* Oauth2 login support (Facebook, Twitter, Linkedin, Google and Office 365)
+* Oauth2 login support (Facebook, Twitter, Linkedin, Google and Microsoft)
 
-The choice of authentication services is arbitrary to allow for any combination of local, Facebook, Twitter, Linkedin, Google or Office 365 accounts.
+The choice of authentication services is arbitrary to allow for any combination of local, Facebook, Twitter, Linkedin, Google or Microsoft accounts.
 
 ## Dependencies
 
@@ -28,7 +28,7 @@ Once the site has been created, then change to the site directory and run
 
     rails s
 
-Then open your browser and access http://localhost:3000 and you should be met with the site homepage. The template by default creates two test users, test1@example.com and test2@example.com, both with the password 'test'. Also by default, the template enables the use of Facebook, Twitter, Linkedin, Google and Office 365 although none of these will work until you have added your own API keys.
+Then open your browser and access http://localhost:3000 and you should be met with the site homepage. The template by default creates two test users, test1@example.com and test2@example.com, both with the password 'test'. Also by default, the template enables the use of Facebook, Twitter, Linkedin, Google and Microsoft although none of these will work until you have added your own API keys.
 
 The above command will create a Rails project with a few example models. Although this will work as an example it is probably not be what you want. To be able to customise the project the template files should be downloaded and then modified according to your needs. The main template file (railyard.rb) is sprinkled with the text TODO where modifications should be added.
 
@@ -36,7 +36,7 @@ The template uses a number of default settings that need to be modified. At the 
 
 Other settings that may be modified later include:
 
-* API keys for Facebook, Twitter, Linkedin, Google and Office 365
+* API keys for Facebook, Twitter, Linkedin, Google and Microsoft
 * Colours for navigation bar and links
 * Images on the home page
 * Footer message
@@ -63,4 +63,5 @@ Note: Updates to both the Ruby language, the Rails framework and the used gems m
 * 2018-03-02 Rewritten to use Rails 5.x and Bootstrap 4.x
 * 2020-07-24 Completely rewritten to use Rails 6.x
 * 2021-01-10 Completely rewritten to use Rails 6.1 and Bootstrap 5
+* 2021-03-13 Fixed support for Microsoft
 

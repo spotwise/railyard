@@ -11,19 +11,20 @@
 #   Twitter: https://dev.twitter.com
 #   Linkedin: https://www.linkedin.com/secure/developer
 #   Google: https://code.google.com/apis/console/
-#   Office 365: https://manage.windowsazure.com
+#   Microsoft: https://portal.azure.com
 #
 
 module DevelopmentKeys
-  FACEBOOK_ID         = "000000000000"
-  FACEBOOK_SECRET     = "000000000000"
-  TWITTER_KEY         = "000000000000"
-  TWITTER_SECRET      = "000000000000"
-  LINKEDIN_API_KEY    = "000000000000"
-  LINKEDIN_SECRET_KEY = "000000000000"
-  GOOGLE_API_KEY      = "000000000000"
-  GOOGLE_SECRET_KEY   = "000000000000"
-  O365_API_KEY        = "000000000000"
-  O365_SECRET_KEY     = "000000000000"
+  FACEBOOK_ID           = "000000000000"
+  FACEBOOK_SECRET       = "000000000000"
+  TWITTER_KEY           = "000000000000"
+  TWITTER_SECRET        = "000000000000"
+  LINKEDIN_API_KEY      = "000000000000"
+  LINKEDIN_SECRET_KEY   = "000000000000"
+  GOOGLE_API_KEY        = "000000000000"
+  GOOGLE_SECRET_KEY     = "000000000000"
+  MICROSOFT_APP_ID      = "000000000000"
+  MICROSOFT_APP_SECRET  = "000000000000"
+  MICROSOFT_DIRECTORY   = "000000000000"
 end
 

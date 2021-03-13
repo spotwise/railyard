@@ -3,7 +3,7 @@
 #
 # This template sets up a rails project with Bootstrap, some scaffolding 
 # and authentication with support for Facebook, Twitter, Google, Linkedin
-# and Office365 login.
+# and Microsoft login.
 #
 # Changes from previous version:
 # - Completely rewritten to use Rails 6.1 and Bootstrap 5
@@ -19,7 +19,7 @@
 # Twitter: https://dev.twitter.com
 # Linkedin: https://www.linkedin.com/secure/developer
 # Google: https://code.google.com/apis/console/
-# Office 365: https://manage.windowsazure.com
+# Microsoft 365: https://portal.azure.com
 #
 # Check respective provider above for information on how to create
 # app and get app ID and secret
@@ -29,36 +29,38 @@
 
 # TODO Configure settings
 @settings = {
-  application_name:               "Test",
-  application_url:                "http://www.example.com",
-  company_name:                   "Example Inc",
-  copyright_year:                 "2021",
-  login_local:                    true,
-  login_facebook:                 true,
-  login_twitter:                  true,
-  login_linkedin:                 true,
-  login_google:                   true,
-  login_office365:                false,
-  facebook_id_production:         "000000000000",
-  facebook_secret_production:     "000000000000",
-  twitter_key_production:         "000000000000",
-  twitter_secret_production:      "000000000000",
-  linkedin_api_key_production:    "000000000000",
-  linkedin_secret_key_production: "000000000000",
-  google_api_key_production:      "000000000000",
-  google_secret_key_production:   "000000000000",
-  o365_api_key_production:        "000000000000",
-  o365_secret_key_production:     "000000000000",
-  facebook_id_development:        "000000000000",
-  facebook_secret_development:    "000000000000",
-  twitter_key_development:        "000000000000",
-  twitter_secret_development:     "000000000000",
-  linkedin_api_key_development:   "000000000000",
-  linkedin_secret_key_development:"000000000000",
-  google_api_key_development:     "000000000000",
-  google_secret_key_development:  "000000000000",
-  o365_api_key_development:       "000000000000",
-  o365_secret_key_development:    "000000000000"
+  application_name:                 "Test",
+  application_url:                  "http://www.example.com",
+  company_name:                     "Example Inc",
+  copyright_year:                   "2021",
+  login_local:                      true,
+  login_facebook:                   true,
+  login_twitter:                    true,
+  login_linkedin:                   true,
+  login_google:                     true,
+  login_microsoft:                  true,
+  facebook_id_production:           "000000000000",
+  facebook_secret_production:       "000000000000",
+  twitter_key_production:           "000000000000",
+  twitter_secret_production:        "000000000000",
+  linkedin_api_key_production:      "000000000000",
+  linkedin_secret_key_production:   "000000000000",
+  google_api_key_production:        "000000000000",
+  google_secret_key_production:     "000000000000",
+  microsoft_app_id_production:      "000000000000",
+  microsoft_app_secret_production:  "000000000000",
+  microsoft_directory_production:   "000000000000",
+  facebook_id_development:          "000000000000",
+  facebook_secret_development:      "000000000000",
+  twitter_key_development:          "000000000000",
+  twitter_secret_development:       "000000000000",
+  linkedin_api_key_development:     "000000000000",
+  linkedin_secret_key_development:  "000000000000",
+  google_api_key_development:       "000000000000",
+  google_secret_key_development:    "000000000000",
+  microsoft_app_id_development:     "000000000000",
+  microsoft_app_secret_development: "000000000000",
+  microsoft_directory_development:  "000000000000"
 }
 
 run 'bundle install'
@@ -130,16 +132,17 @@ begin
     require_relative 'development_keys'
   end
 
-  @settings[:facebook_id_development]         = DevelopmentKeys::FACEBOOK_ID
-  @settings[:facebook_secret_development]     = DevelopmentKeys::FACEBOOK_SECRET
-  @settings[:twitter_key_development]         = DevelopmentKeys::TWITTER_KEY
-  @settings[:twitter_secret_development]      = DevelopmentKeys::TWITTER_SECRET
-  @settings[:linkedin_api_key_development]    = DevelopmentKeys::LINKEDIN_API_KEY
-  @settings[:linkedin_secret_key_development] = DevelopmentKeys::LINKEDIN_SECRET_KEY
-  @settings[:google_api_key_development]      = DevelopmentKeys::GOOGLE_API_KEY
-  @settings[:google_secret_key_development]   = DevelopmentKeys::GOOGLE_SECRET_KEY
-  @settings[:o365_api_key_development]        = DevelopmentKeys::O365_API_KEY
-  @settings[:o365_secret_key_development]     = DevelopmentKeys::O365_SECRET_KEY
+  @settings[:facebook_id_development]           = DevelopmentKeys::FACEBOOK_ID
+  @settings[:facebook_secret_development]       = DevelopmentKeys::FACEBOOK_SECRET
+  @settings[:twitter_key_development]           = DevelopmentKeys::TWITTER_KEY
+  @settings[:twitter_secret_development]        = DevelopmentKeys::TWITTER_SECRET
+  @settings[:linkedin_api_key_development]      = DevelopmentKeys::LINKEDIN_API_KEY
+  @settings[:linkedin_secret_key_development]   = DevelopmentKeys::LINKEDIN_SECRET_KEY
+  @settings[:google_api_key_development]        = DevelopmentKeys::GOOGLE_API_KEY
+  @settings[:google_secret_key_development]     = DevelopmentKeys::GOOGLE_SECRET_KEY
+  @settings[:microsoft_app_id_development]      = DevelopmentKeys::MICROSOFT_APP_ID
+  @settings[:microsoft_app_secret_development]  = DevelopmentKeys::MICROSOFT_APP_SECRET
+  @settings[:microsoft_directory_development]   = DevelopmentKeys::MICROSOFT_DIRECTORY
 
 rescue LoadError
   puts <<EOS
@@ -164,11 +167,11 @@ end
 def login_google
   @settings[:login_google]
 end
-def login_office365
-  @settings[:login_office365]
+def login_microsoft
+  @settings[:login_microsoft]
 end
 def login_oauth
-  login_facebook || login_twitter || login_linkedin || login_google || login_office365
+  login_facebook || login_twitter || login_linkedin || login_google || login_microsoft
 end
 
 # Get a list of all the user defined models
@@ -185,6 +188,7 @@ end
 append_file "Gemfile", "\n# Install gems"
 
 gem 'devise'
+gem "omniauth", "~> 1.9.1"
 gem 'cancancan'
 gem 'role_model'
 gem 'omniauth-oauth2' if login_oauth
@@ -193,7 +197,7 @@ gem 'omniauth-twitter' if login_twitter
 gem 'omniauth-linkedin-oauth2' if login_linkedin
 gem 'google-api-client' if login_google
 gem 'omniauth-google-oauth2' if login_google
-gem 'omniauth-microsoft-office365' if login_office365
+gem 'omniauth-azure-activedirectory-v2' if login_microsoft
 
 gem 'rswag'
 gem_group :development, :test do
@@ -293,10 +297,10 @@ if login_facebook
 end
 
 if login_twitter
-  generate(:migration, "AddTwitterToUsers twitter_uid:string twitter_name:string twitter_nickname:string \
-    twitter_location:string twitter_image:string twitter_description:string twitter_friends:integer \
-    twitter_followers:integer twitter_statuses:integer twitter_listed:integer --force")
-    p << %w{ :twitter_uid :twitter_name :twitter_nickname :twitter_location :twitter_image :twitter_description :twitter_friends :twitter_followers :twitter_statuses :twitter_listed }
+  generate(:migration, "AddTwitterToUsers tw_uid:string tw_name:string tw_nickname:string \
+    tw_location:string tw_image:string tw_description:string tw_friends:integer \
+    tw_followers:integer tw_statuses:integer tw_listed:integer --force")
+    p << %w{ :tw_uid :tw_name :tw_nickname :tw_location :tw_image :tw_description :tw_friends :tw_followers :tw_statuses :tw_listed }
 end
 
 if login_linkedin
@@ -311,10 +315,10 @@ if login_google
   p << %w{ :go_uid :go_email :go_first_name :go_last_name :go_name :go_image }
 end
 
-if login_office365
-  generate(:migration, "AddOffice365ToUsers o3_uid:string o3_email:string o3_first_name:string o3_last_name:string \
-    o3_name:string o3_image:text --force")
-  p << %w{ :o3_uid :o3_email :o3_first_name :o3_last_name :o3_name :o3_image }
+if login_microsoft
+  generate(:migration, "AddMicrosoftToUsers ms_uid:string ms_email:string ms_first_name:string ms_last_name:string \
+    ms_name:string ms_image:text --force")
+  p << %w{ :ms_uid :ms_email :ms_first_name :ms_last_name :ms_name :ms_image }
 end
 
 inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-FILE
@@ -344,14 +348,14 @@ inject_into_file "config/initializers/devise.rb", get_file_contents('config/init
 inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_twitter.rb'), :before => %r{^end$} if login_twitter
 inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_linkedin.rb'), :before => %r{^end$} if login_linkedin
 inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_google.rb'), :before => %r{^end$} if login_google
-inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_office365.rb'), :before => %r{^end$} if login_office365
+inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_microsoft.rb'), :before => %r{^end$} if login_microsoft
 
 providers = []
 providers << ":facebook" if login_facebook
 providers << ":twitter" if login_twitter
 providers << ":linkedin" if login_linkedin
 providers << ":google_oauth2" if login_google
-providers << ":microsoft_office365" if login_office365
+providers << ":azure_activedirectory_v2" if login_microsoft
 
 # Omniauth (https://github.com/plataformatec/devise/wiki/OmniAuth:-Overview)
 if login_oauth
@@ -363,7 +367,7 @@ if login_oauth
   inject_into_file 'app/controllers/users/omniauth_callbacks_controller.rb', get_file_contents('app/controllers/users/_omniauth_callbacks_controller_twitter.rb'), :before => %r{^end$} if login_twitter
   inject_into_file 'app/controllers/users/omniauth_callbacks_controller.rb', get_file_contents('app/controllers/users/_omniauth_callbacks_controller_linkedin.rb'), :before => %r{^end$} if login_linkedin
   inject_into_file 'app/controllers/users/omniauth_callbacks_controller.rb', get_file_contents('app/controllers/users/_omniauth_callbacks_controller_google.rb'), :before => %r{^end$} if login_google
-  inject_into_file 'app/controllers/users/omniauth_callbacks_controller.rb', get_file_contents('app/controllers/users/_omniauth_callbacks_controller_office365.rb'), :before => %r{^end$} if login_office365
+  inject_into_file 'app/controllers/users/omniauth_callbacks_controller.rb', get_file_contents('app/controllers/users/_omniauth_callbacks_controller_microsoft.rb'), :before => %r{^end$} if login_microsoft
 end
 
 # Update the user model with roles
@@ -372,15 +376,15 @@ prepend_file 'app/models/user.rb', get_file_contents('app/models/_user_require.r
 username = []
 username << "name" if login_local
 username << "fb_name" if login_facebook
-username << "twitter_name" if login_twitter
+username << "tw_name" if login_twitter
 username << "li_name" if login_linkedin
 username << "go_name" if login_google
-username << "o3_name" if login_office365
+username << "ms_name" if login_microsoft
 username << '"<no name>"'
 
 avatar = []
 avatar << "fb_image" if login_facebook
-avatar << "twitter_image" if login_twitter
+avatar << "tw_image" if login_twitter
 avatar << "li_image" if login_linkedin
 avatar << "go_image" if login_google
 avatar << '"http://www.gravatar.com/avatar/\#{Digest::MD5.hexdigest(email)}"'
@@ -390,7 +394,7 @@ inject_into_file 'app/models/user.rb', get_file_contents('app/models/_user_faceb
 inject_into_file 'app/models/user.rb', get_file_contents('app/models/_user_twitter.rb'), :before => %r{^end$} if login_twitter
 inject_into_file 'app/models/user.rb', get_file_contents('app/models/_user_linkedin.rb'), :before => %r{^end$} if login_linkedin
 inject_into_file 'app/models/user.rb', get_file_contents('app/models/_user_google.rb'), :before => %r{^end$} if login_google
-inject_into_file 'app/models/user.rb', get_file_contents('app/models/_user_office365.rb'), :before => %r{^end$} if login_office365
+inject_into_file 'app/models/user.rb', get_file_contents('app/models/_user_microsoft.rb'), :before => %r{^end$} if login_microsoft
 
 inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-FILE
 
@@ -455,11 +459,11 @@ append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/vie
 append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_twitter.html.erb') if login_twitter
 append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_linkedin.html.erb') if login_linkedin
 append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_google.html.erb') if login_google
-append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_office365.html.erb') if login_office365
+append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_microsoft.html.erb') if login_microsoft
 append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_local.html.erb') if login_local
 
 get_file 'app/views/devise/registrations/new.html.erb'
-prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_office365.html.erb') if login_office365
+prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_microsoft.html.erb') if login_microsoft
 prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_google.html.erb') if login_google
 prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_linkedin.html.erb') if login_linkedin
 prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_twitter.html.erb') if login_twitter
@@ -470,7 +474,7 @@ inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_conten
 inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_twitter.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_twitter
 inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_linkedin.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_linkedin
 inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_google.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_google
-inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_office365.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_office365
+inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_microsoft.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_microsoft
 
 get_file 'app/views/devise/passwords/new.html.erb'
 inject_into_file 'config/locales/devise.en.yml', get_file_contents('config/locales/_devise.en.yml'), :before => %r{^    passwords:$}
