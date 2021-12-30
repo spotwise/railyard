@@ -9,10 +9,11 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "bootstrap-social.css", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
     <%= yield(:page_stylesheet) if content_for?(:page_stylesheet) %>
-    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
-    <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
   </head>
   <body>
     <header>
@@ -44,7 +45,7 @@
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <li><%= link_to "Profile", '/users/edit', :class => 'dropdown-item' %></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><%= link_to "Sign out", '/users/sign_out', :method => :delete, :class => 'dropdown-item' %></li>
+                  <li><%= button_to "Sign out", destroy_user_session_path, :method => :delete, :class => 'dropdown-item' %></li>
                 </ul>
               </li>
               <% else -%>

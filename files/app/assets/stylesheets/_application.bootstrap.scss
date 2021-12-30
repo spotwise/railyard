@@ -1,11 +1,4 @@
 
-$fa-font-path: '@fortawesome/fontawesome-free/webfonts';
-@import '@fortawesome/fontawesome-free/scss/fontawesome';
-@import '@fortawesome/fontawesome-free/scss/brands';
-@import '@fortawesome/fontawesome-free/scss/solid';
-@import '@fortawesome/fontawesome-free/scss/regular';
-@import '@fortawesome/fontawesome-free/scss/v4-shims';
-
 body { 
   font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
 }
@@ -43,13 +36,13 @@ a.btn:hover {
 }
 
 body.background {
-  background-image:image-url("banner-flowers.jpg");
+  background-image:url("banner-flowers.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center !important;
 }
 .jumbotron {
-  background-image:image-url("banner-flowers.jpg");
+  background-image:url("banner-flowers.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center !important;
