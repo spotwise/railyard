@@ -524,7 +524,7 @@ add_gems
 after_bundle do
   add_bootstrap
   add_users
-  omniauth
+  add_omniauth
   add_sidekiq
   create_scaffolding
   update_content
