@@ -26,6 +26,9 @@
 #
 # Production keys need to be unique for this application while
 # development keys can be reused between applications
+#
+# NOTE Currently, this template must be started with the switch
+# --css=bootstrap.
 
 # TODO Configure settings
 @settings = {
@@ -428,7 +431,7 @@ end
 def add_gems
   gem 'devise'
   gem 'importmap-rails'
-  #gem "omniauth", "~> 1.9.1"
+  gem "omniauth", "~> 1.9.1"
   gem 'cancancan'
   gem 'role_model'
   gem 'omniauth-oauth2' if login_oauth
@@ -522,6 +525,7 @@ source_paths
 add_gems
 
 after_bundle do
+  extra_setup
   add_bootstrap
   add_users
   add_omniauth
@@ -549,4 +553,5 @@ after_bundle do
   say
   say "Then run:"
   say "$ bin/dev", :green
+  say
 end
