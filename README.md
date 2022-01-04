@@ -14,19 +14,21 @@ This project depends on the following:
 * Rails
 * Command line support for wget
 
-The template is known to work on OS X 11.1 and should work on any Linux system. Most likely it does not work on Windows due to the use of typical OS X / Linux commands. 
+The template is known to work on OS X 12.1 and should work on any Linux system. Most likely it does not work on Windows due to the use of typical OS X / Linux commands. 
 
 ## Usage
 
 The quickest way to use the template is to access the template via HTTP:
 
-    rails new SITENAME -m https://github.com/spotwise/railyard/raw/master/railyard.rb
+    rails new SITENAME \
+        --css=bootstrap \
+        -m https://github.com/spotwise/railyard/raw/master/railyard.rb
 
-Replace SITENAME with the name of the project to be created. The Rails system will create a new Ruby on Rails site in the local directory and run the template directly from the web. N.B. The above line will not work in Ruby 3.0.0 due to breaking changes that have not yet been fixed in the underlying framework. Until this has been fixed the Ruby 2.7 branch can be used.
+Replace SITENAME with the name of the project to be created. The Rails system will create a new Ruby on Rails site in the local directory and run the template directly from the web.
 
 Once the site has been created, then change to the site directory and run
 
-    rails s
+    bin/dev
 
 Then open your browser and access http://localhost:3000 and you should be met with the site homepage. The template by default creates two test users, test1@example.com and test2@example.com, both with the password 'test'. Also by default, the template enables the use of Facebook, Twitter, Linkedin, Google and Microsoft although none of these will work until you have added your own API keys.
 
@@ -64,4 +66,5 @@ Note: Updates to both the Ruby language, the Rails framework and the used gems m
 * 2020-07-24 Completely rewritten to use Rails 6.x
 * 2021-01-10 Completely rewritten to use Rails 6.1 and Bootstrap 5
 * 2021-03-13 Fixed support for Microsoft
+* 2022-01-04 Completely rewritten to use Rails 7
 
