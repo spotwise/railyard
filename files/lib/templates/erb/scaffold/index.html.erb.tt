@@ -25,7 +25,7 @@
         <td>
           <%%= link_to 'Show', <%= model_resource_name %>, class: "btn btn-sm btn-secondary" %>
           <%%= link_to 'Edit', edit_<%= singular_route_name %>_path(<%= singular_table_name %>), class: "btn btn-sm btn-secondary" %>
-          <%%= link_to 'Destroy', <%= model_resource_name %>, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %>
+          <%%= link_to 'Destroy', <%= model_resource_name %>, data: { "turbo-method": :delete, confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %>
         </td>
       </tr>
     <%% end %>

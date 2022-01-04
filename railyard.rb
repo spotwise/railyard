@@ -27,8 +27,10 @@
 # Production keys need to be unique for this application while
 # development keys can be reused between applications
 #
-# NOTE Currently, this template must be started with the switch
-# --css=bootstrap.
+# NOTE Current issues:
+# - This template must be started with the switch --css=bootstrap
+# - Swagger API generation is currently commented out
+
 
 # TODO Configure settings
 @settings = {
@@ -428,6 +430,15 @@ def add_seed_data
   end
 end
 
+def fix_destroy_redirects
+  all_models.sort.each do |c|
+    gsub_file "app/controllers/#{c.tableize}_controller.rb",
+      'was successfully destroyed."',
+      'was successfully destroyed.", status: 303'
+  end
+end
+
+
 def add_gems
   gem 'devise'
   gem 'importmap-rails'
@@ -535,6 +546,7 @@ after_bundle do
   require_login
   add_test_data
   add_seed_data
+  fix_destroy_redirects
 
   # Migrate
   rails_command "db:create"
