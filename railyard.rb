@@ -1,16 +1,15 @@
 #
 # Template: Railyard
 #
-# This template sets up a rails project with Bootstrap, some scaffolding 
-# and authentication with support for Facebook, Twitter, Google, Linkedin
-# and Microsoft login.
+# This template sets up a rails project with Tailwind, some scaffolding
+# and authentication support.
 #
 # Changes from previous version:
-# - Completely rewritten to use Rails 7.0 and Bootstrap 5
-# - Verified with Ruby 3.0.2, Rails 7.0, rbenv 1.2.0, npm 7.24.0.
-# - Bootstrap compatible scaffolding views
+# - Rewritten to use Rails 7.1 and Tailwind
+# - Simplified design with fewer tweaks, leaving more for the individual implementation
+# - Verified with Ruby 3.2.2, Rails 7.1.2, rbenv 1.2.0, npm 9.6.6
 #
-# Copyright © 2014-2021 Spotwise
+# Copyright © 2014-2023 Spotwise
 #
 # Check the following web pages for information on how to setup
 # authentication for each identity provider.
@@ -30,20 +29,26 @@
 # NOTE Current issues:
 # - This template must be started with the switch --css=bootstrap
 # - Swagger API generation is currently commented out
-
+# - Run with environment variable RAILS_TEMPLATE_DEBUG set to load local files
+#
+# This script reads resources from the online repository. To instead load resources locally,
+# set the environment variable RAILS_TEMPLATE_DEBUG to any value, i.e.
+#
+#   export RAILS_TEMPLATE_DEBUG=1
+#
 
 # TODO Configure settings
 @settings = {
   application_name:                 "Test",
   application_url:                  "http://www.example.com",
   company_name:                     "Example Inc",
-  copyright_year:                   "2021",
+  copyright_year:                   "2023",
   login_local:                      true,
   login_facebook:                   true,
-  login_twitter:                    true,
-  login_linkedin:                   true,
-  login_google:                     true,
-  login_microsoft:                  true,
+  login_twitter:                    false,
+  login_linkedin:                   false,
+  login_google:                     false,
+  login_microsoft:                  false,
   facebook_id_production:           "000000000000",
   facebook_secret_production:       "000000000000",
   twitter_key_production:           "000000000000",
@@ -99,6 +104,10 @@ No custom keys found. Copy the file development_keys.rb.sample to development_ke
 EOS
 end
 
+##################################
+### Helper functions
+##################################
+
 # Create the directory structure for the provided file path to avoid file creation failing when copying files
 def create_dir(source)
   FileUtils.mkdir_p(File.dirname(source))
@@ -138,6 +147,13 @@ def get_file(source, destination = nil, binary = false)
   end
 end
 
+# Get a list of all the user defined models
+def all_models
+  Dir.glob("app/models/*.rb").map { |x|
+    x.split("/").last.split(".").first.camelize unless x.end_with?("user.rb") or x.end_with?("ability.rb") or x.end_with?("application_record.rb")
+  }.compact
+end
+
 def login_local
   @settings[:login_local]
 end
@@ -160,25 +176,46 @@ def login_oauth
   login_facebook || login_twitter || login_linkedin || login_google || login_microsoft
 end
 
-def create_scaffolding
-  # Create scaffolding
-  # TODO: Create an application specific data model instead of Author -> Books -> Reviews
-  generate(:controller, "home index")
-  generate(:controller, "dashboard index")
-  generate(:scaffold, "Author user_id:integer name:string description:text --no-stylesheets")
-  generate(:scaffold, "Book user_id:integer author_id:integer title:string description:text --no-stylesheets")
-  generate(:scaffold, "Review user_id:integer book_id:integer comment:text rating:integer --no-stylesheets")
-end
-
-# Get a list of all the user defined models
-def all_models
-  Dir.glob("app/models/*.rb").map { |x|
-    x.split("/").last.split(".").first.camelize unless x.end_with?("user.rb") or x.end_with?("ability.rb") or x.end_with?("application_record.rb")
-  }.compact
-end
-
 def footer
   "&copy; <a href='#{@settings[:application_url]}'>#{@settings[:company_name]}</a> #{@settings[:copyright_year]}."
+end
+
+##################################
+### Gems
+##################################
+
+def add_gems
+  gem 'devise-tailwinded'
+  gem 'devise'
+  gem 'cancancan'
+
+  gem 'role_model'
+  gem "omniauth", "~> 1.9.1"
+  gem 'omniauth-oauth2' if login_oauth
+  gem 'omniauth-facebook' if login_facebook
+  #gem 'omniauth-twitter' if login_twitter
+  #gem 'omniauth-linkedin-oauth2' if login_linkedin
+  #gem 'google-api-client' if login_google
+  #gem 'omniauth-google-oauth2' if login_google
+  #gem 'omniauth-azure-activedirectory-v2' if login_microsoft
+
+  #gem 'sidekiq', '~> 6.3', '>= 6.3.1'
+end
+
+##################################
+### Content functions
+##################################
+
+def add_tailwind
+  #generate "devise:views:tailwinded"
+end
+
+def add_alpine
+  #rails_command "importmap:install"
+  run "bin/importmap pin alpinejs"
+  
+  append_file 'app/assets/stylesheets/application.css', get_file_contents('app/assets/stylesheets/_application_alpine.css')
+  append_file 'app/javascript/application.js', get_file_contents('app/javascript/_application_alpine.js')
 end
 
 def add_omniauth
@@ -302,83 +339,136 @@ def add_omniauth
   end
 end
 
-def update_content
-  # First create the menu items based on existing models
-  menu_model_items = ""
-  all_models.sort.each do |c|
-    menu_model_items += "<li class='nav-item'><%= link_to '#{c.pluralize}', '/#{c.tableize}', :class => 'nav-link'  %></li>\n              "
+def add_seed_data
+  # Add seed data to create a user
+  if login_local
+    append_file 'db/seeds.rb', get_file_contents('db/_seeds.rb')
+    #rails_command "db:seed"
+  end
+end
+
+def add_sidekiq
+  environment "config.active_job.queue_adapter = :sidekiq"
+
+  insert_into_file "config/routes.rb",
+    "require 'sidekiq/web'\n\n",
+    before: "Rails.application.routes.draw do"
+
+  content = <<-RUBY
+    authenticate :user, lambda { |u| u.admin? } do
+      mount Sidekiq::Web => '/sidekiq'
+    end
+  RUBY
+  insert_into_file "config/routes.rb", "#{content}\n\n", after: "Rails.application.routes.draw do\n"
+end
+
+def add_swagger
+  # append_file "Gemfile", "\n# Install gems"
+
+  # gem 'rswag'
+  # gem_group :development, :test do
+  #   gem 'rspec-rails'
+  #   gem 'rswag-specs'
+  # end
+
+  # Add support for Swagger
+  # generate('rswag:specs:install')
+  # generate('rswag:api:install')
+  # generate('rswag:ui:install')
+  # generate('rspec:install')
+
+  # all_models.sort.each do |c|
+  #   generate("rspec:swagger API::V1::#{c.pluralize}_Controller")
+  # end
+
+  # run('rails rswag:specs:swaggerize')
+end
+
+def add_test_data
+  gsub_file 'test/fixtures/users.yml', %r{^one:}, '#one:'
+  gsub_file 'test/fixtures/users.yml', %r{^two:}, '#two:'
+  append_file 'test/fixtures/users.yml', "#{get_file_contents('test/fixtures/_users.yml')}"
+
+  inject_into_file "test/controllers/dashboard_controller_test.rb",
+      "#{get_file_contents('test/controllers/_dashboard_controller_test.rb')}",
+      after: "ActionDispatch::IntegrationTest\n"
+end
+
+def add_users
+
+  # Install Devise
+  generate "devise:install"
+  generate "devise:views"
+
+  # Configure Devise
+  environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }", env: 'development'
+
+  route "root to: 'home#index'"
+  route "get 'dashboard' => 'dashboard#index'"
+
+  # Create Devise User
+  generate :devise, "User", "first_name", "last_name", "admin:boolean"
+
+  # set admin boolean to false by default
+  in_root do
+    migration = Dir.glob("db/migrate/*").max_by{ |f| File.mtime(f) }
+    gsub_file migration, /:admin/, ":admin, default: false"
   end
 
-  @settings[:footer] = footer
-  @settings[:menu] = menu_model_items
+  # Create an ability file
+  get_file 'app/models/ability.rb'
 
-  # Create the layout file
-  get_file 'app/views/layouts/application.html.erb'
+end
 
-  # Download Bootstrap social icons
-  run "wget -O app/assets/stylesheets/bootstrap-social.css https://github.com/lipis/bootstrap-social/raw/gh-pages/bootstrap-social.css"
+def create_scaffolding
+  # Create scaffolding
+  # TODO: Create an application specific data model instead of Author -> Books -> Reviews
+  generate(:controller, "home index")
+  generate(:controller, "dashboard index")
+  generate(:scaffold, "Author user_id:integer name:string description:text --no-stylesheets")
+  generate(:scaffold, "Book user_id:integer author_id:integer title:string description:text --no-stylesheets")
+  generate(:scaffold, "Review user_id:integer book_id:integer comment:text rating:integer --no-stylesheets")
+end
 
-  append_file 'app/assets/config/manifest.js', "\n//= link bootstrap-social.css\nw"
+def pre_setup
+  #inject_into_file "config/application.rb", get_file_contents('config/_application_generators.rb'), :before => %r{^  end$}
+  #get_file 'lib/templates/erb/scaffold/_form.html.erb.tt'
+  #get_file 'lib/templates/erb/scaffold/edit.html.erb.tt'
+  #get_file 'lib/templates/erb/scaffold/index.html.erb.tt'
+  #get_file 'lib/templates/erb/scaffold/new.html.erb.tt'
+  #get_file 'lib/templates/erb/scaffold/show.html.erb.tt'
 
-  append_file 'app/assets/stylesheets/application.bootstrap.scss', "#{get_file_contents('app/assets/stylesheets/_application.bootstrap.scss')}"
+  # Install Devise
+  #generate "devise:install"
+  #generate "devise User"
 
-  # Redirect user to dashboard after having logged in
-  inject_into_file 'app/controllers/application_controller.rb', get_file_contents('app/controllers/_application_controller.rb'), :before => %r{^end$}
+end
 
-  # Download images
-  get_file 'app/assets/images/banner-flowers.jpg', nil, true
-  get_file 'app/assets/images/bird.jpg', nil, true
-  get_file 'app/assets/images/seaweed.jpg', nil, true
-  get_file 'app/assets/images/shells.jpg', nil, true
-  get_file 'app/assets/images/logo.png', nil, true
-  get_file 'app/assets/images/logo-600px.png', nil, true
-  get_file 'app/assets/images/favicon.ico', nil, true
-  get_file 'app/assets/images/apple-touch-icon-72x72-precomposed.png', nil, true
-  get_file 'app/assets/images/apple-touch-icon-114x114-precomposed.png', nil, true
-  get_file 'app/assets/images/apple-touch-icon-144x144-precomposed.png', nil, true
-  get_file 'app/assets/images/apple-touch-icon-precomposed.png', nil, true
+def post_setup
+  # Make development server accessible on the local network
+  insert_into_file "Procfile.dev", " -b 0.0.0.0", after: "server -p 3000"
 
-  # Add custom Javascript and stylesheets
-  #append_file 'app/javascript/packs/application.js', get_file_contents('app/javascript/packs/_application.js')
-  #get_file 'app/javascript/stylesheets/application.scss'
+  run "bin/importmap pin alpinejs"
 
-  # Replace the home page
-  get_file 'app/views/home/index.html.erb'
+  append_file 'app/assets/stylesheets/application.css', get_file_contents('app/assets/stylesheets/_application_alpine.css')
+  append_file 'app/javascript/application.js', get_file_contents('app/javascript/_application_alpine.js')
 
-  # Layout account pages
-  get_file 'app/views/layouts/devise.html.erb'
+  # Migrate
+  rails_command "db:create"
+  rails_command "db:migrate"
+  rails_command "db:seed"
 
-  get_file     'app/views/devise/sessions/new.html.erb'
-  append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_facebook.html.erb') if login_facebook
-  append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_twitter.html.erb') if login_twitter
-  append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_linkedin.html.erb') if login_linkedin
-  append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_google.html.erb') if login_google
-  append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_microsoft.html.erb') if login_microsoft
-  append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_local.html.erb') if login_local
+  git :init
+  git add: "."
+  git commit: %Q{ -m "Initial commit" }
+end
 
-  get_file 'app/views/devise/registrations/new.html.erb'
-  prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_microsoft.html.erb') if login_microsoft
-  prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_google.html.erb') if login_google
-  prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_linkedin.html.erb') if login_linkedin
-  prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_twitter.html.erb') if login_twitter
-  prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_facebook.html.erb') if login_facebook
-
-  get_file 'app/views/devise/registrations/edit.html.erb'
-  inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_facebook.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_facebook
-  inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_twitter.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_twitter
-  inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_linkedin.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_linkedin
-  inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_google.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_google
-  inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_microsoft.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_microsoft
-
-  get_file 'app/views/devise/passwords/new.html.erb'
-  inject_into_file 'config/locales/devise.en.yml', get_file_contents('config/locales/_devise.en.yml'), :before => %r{^    passwords:$}
-  inject_into_file "config/application.rb", get_file_contents('config/_application_devise.rb'), :before => %r{^  end$}
-
-  inject_into_file "config/application.rb", get_file_contents('config/_application_google.rb'), :before => %r{^  end$} if login_google
-
-  #run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss"
-
-  append_file "README.md", get_file_contents('_README.md')
+def fix_destroy_redirects
+  all_models.sort.each do |c|
+    gsub_file "app/controllers/#{c.tableize}_controller.rb",
+      'was successfully destroyed."',
+      'was successfully destroyed.", status: 303'
+  end
 end
 
 def require_login
@@ -412,123 +502,86 @@ def require_login
 
 end
 
-def add_test_data
-  gsub_file 'test/fixtures/users.yml', %r{^one:}, '#one:'
-  gsub_file 'test/fixtures/users.yml', %r{^two:}, '#two:'
-  append_file 'test/fixtures/users.yml', "#{get_file_contents('test/fixtures/_users.yml')}"
+def update_content
+  # First create the menu items based on existing models
+  #menu_model_items = ""
+  #all_models.sort.each do |c|
+  #  menu_model_items += "<li class='nav-item'><%= link_to '#{c.pluralize}', '/#{c.tableize}', :class => 'nav-link'  %></li>\n              "
+  #end
 
-  inject_into_file "test/controllers/dashboard_controller_test.rb",
-      "#{get_file_contents('test/controllers/_dashboard_controller_test.rb')}",
-      after: "ActionDispatch::IntegrationTest\n"
+  #@settings[:footer] = footer
+  #@settings[:menu] = menu_model_items
+
+  # Create the layout file
+  #get_file 'app/views/layouts/application.html.erb'
+  inject_into_file "app/views/layouts/application.html.erb", get_file_contents('app/views/layouts/_application_head.html.erb'), :before => %r{^  </head>$}
+  inject_into_file "app/views/layouts/application.html.erb", get_file_contents('app/views/layouts/_application_navbar.html.erb'), :before => %r{^    <main}
+
+  # Download Bootstrap social icons
+  #run "wget -O app/assets/stylesheets/bootstrap-social.css https://github.com/lipis/bootstrap-social/raw/gh-pages/bootstrap-social.css"
+
+  #append_file 'app/assets/config/manifest.js', "\n//= link bootstrap-social.css\nw"
+
+  #append_file 'app/assets/stylesheets/application.bootstrap.scss', "#{get_file_contents('app/assets/stylesheets/_application.bootstrap.scss')}"
+
+  # Redirect user to dashboard after having logged in
+  inject_into_file 'app/controllers/application_controller.rb', get_file_contents('app/controllers/_application_controller.rb'), :before => %r{^end$}
+
+  # Download images
+  get_file 'app/assets/images/banner-flowers.jpg', nil, true
+  get_file 'app/assets/images/bird.jpg', nil, true
+  get_file 'app/assets/images/seaweed.jpg', nil, true
+  get_file 'app/assets/images/shells.jpg', nil, true
+  get_file 'app/assets/images/logo.png', nil, true
+  get_file 'app/assets/images/logo-600px.png', nil, true
+  get_file 'app/assets/images/favicon.ico', nil, true
+  get_file 'app/assets/images/apple-touch-icon-72x72-precomposed.png', nil, true
+  get_file 'app/assets/images/apple-touch-icon-114x114-precomposed.png', nil, true
+  get_file 'app/assets/images/apple-touch-icon-144x144-precomposed.png', nil, true
+  get_file 'app/assets/images/apple-touch-icon-precomposed.png', nil, true
+
+  # Add custom Javascript and stylesheets
+  #append_file 'app/javascript/packs/application.js', get_file_contents('app/javascript/packs/_application.js')
+  #get_file 'app/javascript/stylesheets/application.scss'
+
+  # Replace the home page
+  get_file 'app/views/home/index.html.erb'
+
+  # Layout account pages
+  #get_file 'app/views/layouts/devise.html.erb'
+
+  get_file     'app/views/devise/sessions/new.html.erb'
+  #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_facebook.html.erb') if login_facebook
+  #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_twitter.html.erb') if login_twitter
+  #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_linkedin.html.erb') if login_linkedin
+  #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_google.html.erb') if login_google
+  #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_microsoft.html.erb') if login_microsoft
+  #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_local.html.erb') if login_local
+
+  get_file 'app/views/devise/registrations/new.html.erb'
+  #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_microsoft.html.erb') if login_microsoft
+  #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_google.html.erb') if login_google
+  #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_linkedin.html.erb') if login_linkedin
+  #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_twitter.html.erb') if login_twitter
+  prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_facebook.html.erb') if login_facebook
+
+  get_file 'app/views/devise/registrations/edit.html.erb'
+  inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_facebook.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_facebook
+  #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_twitter.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_twitter
+  #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_linkedin.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_linkedin
+  #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_google.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_google
+  #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_microsoft.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_microsoft
+
+  get_file 'app/views/devise/passwords/new.html.erb'
+  inject_into_file 'config/locales/devise.en.yml', get_file_contents('config/locales/_devise.en.yml'), :before => %r{^    passwords:$}
+  inject_into_file "config/application.rb", get_file_contents('config/_application_devise.rb'), :before => %r{^  end$}
+
+  inject_into_file "config/application.rb", get_file_contents('config/_application_google.rb'), :before => %r{^  end$} if login_google
+
+  #run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss"
+
+  append_file "README.md", get_file_contents('_README.md')
 end
-
-def add_seed_data
-  # Add seed data to create a user
-  if login_local
-    append_file 'db/seeds.rb', get_file_contents('db/_seeds.rb')
-    #rails_command "db:seed"
-  end
-end
-
-def fix_destroy_redirects
-  all_models.sort.each do |c|
-    gsub_file "app/controllers/#{c.tableize}_controller.rb",
-      'was successfully destroyed."',
-      'was successfully destroyed.", status: 303'
-  end
-end
-
-
-def add_gems
-  gem 'devise'
-  gem 'importmap-rails'
-  gem "omniauth", "~> 1.9.1"
-  gem 'cancancan'
-  gem 'role_model'
-  gem 'omniauth-oauth2' if login_oauth
-  gem 'omniauth-facebook' if login_facebook
-  gem 'omniauth-twitter' if login_twitter
-  gem 'omniauth-linkedin-oauth2' if login_linkedin
-  gem 'google-api-client' if login_google
-  gem 'omniauth-google-oauth2' if login_google
-  gem 'omniauth-azure-activedirectory-v2' if login_microsoft
-  gem 'sidekiq', '~> 6.3', '>= 6.3.1'
-end
-
-def add_bootstrap
-  rails_command "css:install:bootstrap"
-end
-
-def add_users
-  # Install Devise
-  generate "devise:install"
-
-  # Configure Devise
-  environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }", env: 'development'
-
-  route "root to: 'home#index'"
-  route "get 'dashboard' => 'dashboard#index'"
-
-  # Create Devise User
-  generate :devise, "User", "first_name", "last_name", "admin:boolean"
-
-  # set admin boolean to false by default
-  in_root do
-    migration = Dir.glob("db/migrate/*").max_by{ |f| File.mtime(f) }
-    gsub_file migration, /:admin/, ":admin, default: false"
-  end
-
-  # Create an ability file
-  get_file 'app/models/ability.rb'
-
-end
-
-def add_sidekiq
-  environment "config.active_job.queue_adapter = :sidekiq"
-
-  insert_into_file "config/routes.rb",
-    "require 'sidekiq/web'\n\n",
-    before: "Rails.application.routes.draw do"
-
-  content = <<-RUBY
-    authenticate :user, lambda { |u| u.admin? } do
-      mount Sidekiq::Web => '/sidekiq'
-    end
-  RUBY
-  insert_into_file "config/routes.rb", "#{content}\n\n", after: "Rails.application.routes.draw do\n"
-end
-
-def extra_setup
-  inject_into_file "config/application.rb", get_file_contents('config/_application_generators.rb'), :before => %r{^  end$}
-  get_file 'lib/templates/erb/scaffold/_form.html.erb.tt'
-  get_file 'lib/templates/erb/scaffold/edit.html.erb.tt'
-  get_file 'lib/templates/erb/scaffold/index.html.erb.tt'
-  get_file 'lib/templates/erb/scaffold/new.html.erb.tt'
-  get_file 'lib/templates/erb/scaffold/show.html.erb.tt'
-end
-
-def add_swagger
-  # append_file "Gemfile", "\n# Install gems"
-
-  # gem 'rswag'
-  # gem_group :development, :test do
-  #   gem 'rspec-rails'
-  #   gem 'rswag-specs'
-  # end
-
-  # Add support for Swagger
-  # generate('rswag:specs:install')
-  # generate('rswag:api:install')
-  # generate('rswag:ui:install')
-  # generate('rspec:install')
-
-  # all_models.sort.each do |c|
-  #   generate("rspec:swagger API::V1::#{c.pluralize}_Controller")
-  # end
-
-  # run('rails rswag:specs:swaggerize')
-end
-
 
 # Begin setup
 source_paths
@@ -536,26 +589,19 @@ source_paths
 add_gems
 
 after_bundle do
-  extra_setup
-  add_bootstrap
+  pre_setup
+  add_tailwind
+  #add_alpine
   add_users
   add_omniauth
-  add_sidekiq
+  #add_sidekiq
   create_scaffolding
   update_content
   require_login
   add_test_data
   add_seed_data
-  fix_destroy_redirects
-
-  # Migrate
-  rails_command "db:create"
-  rails_command "db:migrate"
-  rails_command "db:seed"
-
-  git :init
-  git add: "."
-  git commit: %Q{ -m "Initial commit" }
+  #fix_destroy_redirects
+  post_setup
 
   say
   say "Ruby on Rails app successfully created!", :green

@@ -1,47 +1,107 @@
-
 <% content_for :hero do %>
-<section class="jumbotron">
-	<div class="container-fluid">
-	  <h2>Welcome!</h2>
-	  <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-  </div>
-</section>
-<% end %>
+<div class="min-w-full w-full">
+	<div class="bg-slate-300">
+		<div class="bg-gradient-to-b from-gray-400/[.45] via-transparent">
+			<div class="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-8">
 
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-4 text-center">
-	    <%= image_tag "bird.jpg", :class => 'rounded-circle', :width => 140, :height => 140, :'data-src' => "holder.js/140x140" %>
-			<h2>Feature 1</h2>
-			<p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.</p>
-			<p><a class="btn btn-secondary" href="#">View details »</a></p>
-		</div>
-		<div class="col-md-4 text-center">
-    <%= image_tag "seaweed.jpg", :class => 'rounded-circle', :width => 140, :height => 140, :'data-src' => "holder.js/140x140" %>
-			<h2>Feature 2</h2>
-			<p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-			<p><a class="btn btn-secondary" href="#">View details »</a></p>
-		</div>
-		<div class="col-md-4 text-center">
-    <%= image_tag "shells.jpg", :class => 'rounded-circle', :width => 140, :height => 140, :'data-src' => "holder.js/140x140" %>
-			<h2>Feature 3</h2>
-			<p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-			<p><a class="btn btn-secondary" href="#">View details »</a></p>
-		</div>
-	</div><!-- /.row -->
-</div>
+				<!-- Title -->
+				<div class="max-w-3xl text-center mx-auto">
+					<h1 class="block font-medium text-gray-600 text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+						Building a Rails 7 site is super simple!
+					</h1>
+				</div>
+				<!-- End Title -->
 
-<hr/>
+				<div class="max-w-3xl text-center mx-auto">
+					<p class="text-lg text-gray-500">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
+						do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+						nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+						irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+						Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+						anim id est laborum.</p>
+				</div>
 
-<% unless user_signed_in? then -%>
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-8 text-center">
-			<h2>Sign up or log in now!</h2>
-		</div>
-		<div class="col-md-4 text-center">
-			<a style="margin-top:10px;" href="/users/sign_in/" class="btn btn-lg btn-primary">Get Started</a>
+				<!-- Buttons -->
+				<div class="text-center">
+					<a class="inline-flex justify-center items-center gap-x-3 text-center bg-indigo-700 shadow-lg shadow-transparent hover:bg-indigo-500 border border-transparent text-white text-sm font-medium rounded-full focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white py-3 px-6 dark:focus:ring-offset-gray-800"
+						href="https://github.com/spotwise/railyard"
+						target="_blank">
+						Getting started
+					</a>
+				</div>
+				<!-- End Buttons -->
+			</div>
 		</div>
 	</div>
+	<!-- End Hero -->
 </div>
-<% end -%>
+<% end %>
+
+<div class="flex-col">
+
+	<div class="mx-auto mt-0 mb-10 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 pt-0 sm:mt-0 sm:pt-0 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+		<feature class="bg-[url('<%= image_path "bird.jpg" %>')] flex max-w-xl flex-col items-start justify-between border-t border-gray-200 shadow p-4">
+		  <div class="group relative">
+			<h3 class="mt-3 text-2xl font-bold tracking-tight leading-6 text-gray-900 group-hover:text-gray-600">
+			  <a href="#">
+				<span class="absolute inset-0"></span>
+				What do you call a fish wearing a bow tie?
+			  </a>
+			</h3>
+			<p class="mt-5 text-md leading-6 text-gray-600">Sofishticated. Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor
+				id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac,
+				vestibulum at eros. Praesent commodo cursus magna, vel scelerisque nisl consectetur
+				et.</p>
+		  </div>
+		</feature>
+
+		<feature class="flex max-w-xl flex-col items-start justify-between border-t border-gray-200 shadow p-4">
+			<div class="group relative">
+			  <h3 class="mt-3 text-2xl font-bold tracking-tight leading-6 text-gray-900 group-hover:text-gray-600">
+				<a href="#">
+					<span class="absolute inset-0"></span>
+					How do you organise a space party?
+				</a>
+			  </h3>
+			  <p class="mt-5 text-md leading-6 text-gray-600">You planet. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio
+				sem nec elit. Cras mattis consectetur purus sit amet fermentum. Fusce dapibus,
+				tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo
+				sit amet risus.</p>
+			</div>
+		  </feature>
+
+		  <feature class="flex max-w-xl flex-col items-start justify-between border-t border-gray-200 shadow p-4">
+			<div class="group relative">
+			  <h3 class="mt-3 text-2xl font-bold tracking-tight leading-6 text-gray-900 group-hover:text-gray-600">
+				<a href="#">
+				  <span class="absolute inset-0"></span>
+				  Why did the teddy bear skip dessert?
+				</a>
+			  </h3>
+			  <p class="mt-5 text-md leading-6 text-gray-600">She was stuffed. Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+				Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus
+				commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+			</div>
+		  </feature>
+	  </div>
+
+
+	<% unless user_signed_in? then -%>
+	<div class="bg-white mb-20">
+		<div class="mx-auto max-w-full py-10 sm:px-6 lg:px-8 border">
+			<div class="mx-auto text-center lg:mx-0 lg:flex-auto lg:text-left">
+			  <h2 class="text-2xl font-bold tracking-tight">Get started with the app today.</h2>
+			  <p class="mt-6 text-md leading-8 ">Ac euismod vel sit maecenas id pellentesque eu sed consectetur. Malesuada adipiscing sagittis vel nulla.</p>
+			  <div class="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
+				<div class="text-center">
+					<a class="inline-flex w-40 justify-center items-center gap-x-3 text-center bg-indigo-700 shadow-lg shadow-transparent hover:bg-indigo-500 border border-transparent text-white text-sm font-medium rounded-full focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white py-3 px-6 dark:focus:ring-offset-gray-800"
+						href="/users/sign_in/">
+						Sign in
+					</a>
+				</div>
+			  </div>
+			</div>
+		</div>
+	  </div>
+	<% end -%>
+</div>

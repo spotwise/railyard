@@ -1,15 +1,33 @@
+<div class="flex-col">
+
+<div class="card w-full py-8">
+  <h2 class="font-semibold text-xl text-indigo-500">Your profile</h2>
+  <p>Click on the services below to associate them with your account. This will allow you to use them to log onto the system. If you do not do this a new account may be created for you if you log on with another service.</p>
+  <% if current_user.has_facebook? %>
+  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Facebook</button>
+  <% else %>
+  <a href="/users/auth/facebook">
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Facebook</button>
+  </a>
+  <% end %>
+</div>
+
+<div class="card w-full py-8">
+  <h3 class="font-semibold text-xl text-indigo-500">Cancel my account</h3>
+  <p>If you do not want to use this service you can cancel your account. <strong>Note that doing so will delete all your data.</strong></p>
+  <p>
+    <%= button_to "Cancel my account", registration_path(resource_name), :data => { :confirm => "Are you sure?" }, :method => :delete, :class => 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded' %>
+  </p>
+
+</div>
+
+
 <div class="container-fluid">
-  <div class="row">
-    <div class="span8">
-      <h2>Your profile</h2>
-      <p>Click on the services below to associate them with your account. This will allow you to use them to log onto the system. If you do not do this a new account may be created for you if you log on with another service.</p>
+
 <!--SOCIAL-->
     </div>
   </div>
   <br/>
-
-<div class="row">
-  <div class="span8 offset2">
 
 <% if current_user.provider.nil? -%>
 <%= form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :method => :put, :class => 'form-horizontal' }) do |f| %>
@@ -42,17 +60,10 @@
   </div>
 
   <div><%= f.submit "Update", :class => 'btn btn-primary' %></div>
-  <br/><br/>
 
 <% end %>
 
 <% end -%>
 
-<h3>Cancel my account</h3>
 
-<p>If you do not want to use this service you can cancel your account. <strong>Note that doing so will delete all your data.</strong></p>
-<p>
-<%= button_to "Cancel my account", registration_path(resource_name), :data => { :confirm => "Are you sure?" },
-  :method => :delete, :class => 'btn btn-danger' %></p>
-
-</div></div></div>
+</div>
