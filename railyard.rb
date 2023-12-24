@@ -46,8 +46,8 @@
   login_local:                      true,
   login_facebook:                   true,
   login_twitter:                    false,
-  login_linkedin:                   false,
-  login_google:                     false,
+  login_linkedin:                   true,
+  login_google:                     true,
   login_microsoft:                  false,
   facebook_id_production:           "000000000000",
   facebook_secret_production:       "000000000000",
@@ -194,9 +194,9 @@ def add_gems
   gem 'omniauth-oauth2' if login_oauth
   gem 'omniauth-facebook' if login_facebook
   #gem 'omniauth-twitter' if login_twitter
-  #gem 'omniauth-linkedin-oauth2' if login_linkedin
-  #gem 'google-api-client' if login_google
-  #gem 'omniauth-google-oauth2' if login_google
+  gem 'omniauth-linkedin-oauth2' if login_linkedin
+  gem 'google-api-client' if login_google
+  gem 'omniauth-google-oauth2' if login_google
   #gem 'omniauth-azure-activedirectory-v2' if login_microsoft
 
   #gem 'sidekiq', '~> 6.3', '>= 6.3.1'
@@ -305,17 +305,17 @@ def add_omniauth
   username = []
   username << "name" if login_local
   username << "fb_name" if login_facebook
+  username << "go_name" if login_google
   username << "tw_name" if login_twitter
   username << "li_name" if login_linkedin
-  username << "go_name" if login_google
   username << "ms_name" if login_microsoft
   username << '"<no name>"'
 
   avatar = []
   avatar << "fb_image" if login_facebook
+  avatar << "go_image" if login_google
   avatar << "tw_image" if login_twitter
   avatar << "li_image" if login_linkedin
-  avatar << "go_image" if login_google
   avatar << '"http://www.gravatar.com/avatar/\#{Digest::MD5.hexdigest(email)}"'
 
   inject_into_file 'app/models/user.rb', get_file_contents('app/models/_user.rb'), :before => %r{^end$}
@@ -332,7 +332,12 @@ def add_omniauth
     end
 
     def avatar
-      #{avatar.join(" || ")}
+      if Rails.env.production?
+        #{avatar.join(" || ")}
+      else
+        # Facebook profile picture doesn't work in development (Q4 2023)
+        #{(avatar - ['fb_image']).join(" || ")}
+      end
     end
 
   FILE
@@ -563,10 +568,10 @@ def update_content
   #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_google.html.erb') if login_google
   #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_linkedin.html.erb') if login_linkedin
   #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_twitter.html.erb') if login_twitter
-  prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_facebook.html.erb') if login_facebook
+  #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_facebook.html.erb') if login_facebook
 
   get_file 'app/views/devise/registrations/edit.html.erb'
-  inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_facebook.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_facebook
+  #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_facebook.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_facebook
   #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_twitter.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_twitter
   #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_linkedin.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_linkedin
   #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_google.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_google

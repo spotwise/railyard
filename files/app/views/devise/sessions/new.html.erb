@@ -46,9 +46,13 @@
         <span class="bg-white px-4 text-sm text-gray-500">Or continue with</span>
       </div>
     </div>
-        <div>
+        <div class="grid grid-cols-3 gap-3">
+
+          <%= button_to "Facebook", omniauth_authorize_path(resource_name, "facebook"), data: { turbo: false }, class: "bg-blue-600 hover:bg-blue-700 text-white px-4 mx-2 py-2 w-full rounded" %>
+          <%= button_to "Google", omniauth_authorize_path(resource_name, "google_oauth2"), data: { turbo: false }, class: "bg-red-500 hover:bg-red-600 text-white px-4 mx-2 py-2 w-full rounded" %>
+          <%= button_to "Linkedin", omniauth_authorize_path(resource_name, "linkedin"), data: { turbo: false }, class: "bg-blue-600 hover:bg-blue-700 text-white px-4 mx-2 py-2 w-full rounded" %>
+
           <%- resource_class.omniauth_providers.each do |provider| %>
-          <%= button_to "Facebook", omniauth_authorize_path(resource_name, provider), data: { turbo: false }, class: "bg-blue-500 text-white px-4 py-2 rounded" %>
           <% end %>
 
         </div>

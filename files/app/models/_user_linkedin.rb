@@ -27,7 +27,7 @@
         li_first_name:auth.info.first_name,
         li_last_name:auth.info.last_name,
         li_name:auth.info.name,
-        li_image:auth.info.image,
+        li_image:auth.info.picture_url,
         li_headline:auth.info.headline,
         li_industry:auth.info.industry
         )
