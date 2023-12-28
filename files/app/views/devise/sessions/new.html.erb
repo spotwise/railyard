@@ -4,10 +4,14 @@
   <div class="sm:mx-auto sm:w-full sm:max-w-sm">
     <div class="w-full text-center tracking-tight text-3xl font-black text-indigo-700">RAILYARD</div>
     <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Sign in to your account</h2>
+		<%= render "devise/shared/error_messages", resource: resource %>
+    <% flash.each do |key, value| %>
+       <div class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3 <%= key %>"><%= value %></div>
+    <% end %>
 
   </div>
 
-  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+  <div class="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
     <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: 'space-y-6'}) do |f| %>
     <%= render "devise/shared/error_messages", resource: resource %>
       <div>

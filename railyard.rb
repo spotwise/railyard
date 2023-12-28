@@ -578,6 +578,9 @@ def update_content
   #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_microsoft.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_microsoft
 
   get_file 'app/views/devise/passwords/new.html.erb'
+
+  get_file 'app/views/devise/shared/_error_messages.html.erb'
+
   inject_into_file 'config/locales/devise.en.yml', get_file_contents('config/locales/_devise.en.yml'), :before => %r{^    passwords:$}
   inject_into_file "config/application.rb", get_file_contents('config/_application_devise.rb'), :before => %r{^  end$}
 
