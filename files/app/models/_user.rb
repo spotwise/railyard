@@ -24,5 +24,5 @@
   roles_attribute :roles_mask
   
   # Valid roles. (NOTE: only add new roles to the end of the list)
-  roles :admin, :manager
+  roles :superuser, :admin, :manager, :editor, :reader, :trial, :freemium
 

@@ -34,12 +34,7 @@
         fb_first_name:auth.info.first_name,
         fb_last_name:auth.info.last_name,
         fb_name:auth.info.name,
-        fb_location:auth.info.location,
-        fb_image:auth.info.image,
-        fb_nickname:auth.info.nickname,
-        fb_gender:auth.extra.raw_info.gender,
-        fb_locale:auth.extra.raw_info.locale,
-        fb_username:auth.extra.raw_info.username
+        fb_image:auth.info.image
         )
     user
   end

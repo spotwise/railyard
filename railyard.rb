@@ -9,16 +9,14 @@
 # - Simplified design with fewer tweaks, leaving more for the individual implementation
 # - Verified with Ruby 3.2.2, Rails 7.1.2, rbenv 1.2.0, npm 9.6.6
 #
-# Copyright © 2014-2023 Spotwise
+# Copyright © 2014-2024 Spotwise
 #
 # Check the following web pages for information on how to setup
 # authentication for each identity provider.
 #
 # Facebook: https://developers.facebook.com
-# Twitter: https://dev.twitter.com
 # Linkedin: https://www.linkedin.com/secure/developer
 # Google: https://code.google.com/apis/console/
-# Microsoft 365: https://portal.azure.com
 #
 # Check respective provider above for information on how to create
 # app and get app ID and secret
@@ -45,32 +43,20 @@
   copyright_year:                   "2023",
   login_local:                      true,
   login_facebook:                   true,
-  login_twitter:                    false,
   login_linkedin:                   true,
   login_google:                     true,
-  login_microsoft:                  false,
   facebook_id_production:           "000000000000",
   facebook_secret_production:       "000000000000",
-  twitter_key_production:           "000000000000",
-  twitter_secret_production:        "000000000000",
   linkedin_api_key_production:      "000000000000",
   linkedin_secret_key_production:   "000000000000",
   google_api_key_production:        "000000000000",
   google_secret_key_production:     "000000000000",
-  microsoft_app_id_production:      "000000000000",
-  microsoft_app_secret_production:  "000000000000",
-  microsoft_directory_production:   "000000000000",
   facebook_id_development:          "000000000000",
   facebook_secret_development:      "000000000000",
-  twitter_key_development:          "000000000000",
-  twitter_secret_development:       "000000000000",
   linkedin_api_key_development:     "000000000000",
   linkedin_secret_key_development:  "000000000000",
   google_api_key_development:       "000000000000",
-  google_secret_key_development:    "000000000000",
-  microsoft_app_id_development:     "000000000000",
-  microsoft_app_secret_development: "000000000000",
-  microsoft_directory_development:  "000000000000"
+  google_secret_key_development:    "000000000000"
 }
 
 # ========= NO CHANGES BELOW THIS LINE =========
@@ -86,15 +72,10 @@ begin
 
   @settings[:facebook_id_development]           = DevelopmentKeys::FACEBOOK_ID
   @settings[:facebook_secret_development]       = DevelopmentKeys::FACEBOOK_SECRET
-  @settings[:twitter_key_development]           = DevelopmentKeys::TWITTER_KEY
-  @settings[:twitter_secret_development]        = DevelopmentKeys::TWITTER_SECRET
   @settings[:linkedin_api_key_development]      = DevelopmentKeys::LINKEDIN_API_KEY
   @settings[:linkedin_secret_key_development]   = DevelopmentKeys::LINKEDIN_SECRET_KEY
   @settings[:google_api_key_development]        = DevelopmentKeys::GOOGLE_API_KEY
   @settings[:google_secret_key_development]     = DevelopmentKeys::GOOGLE_SECRET_KEY
-  @settings[:microsoft_app_id_development]      = DevelopmentKeys::MICROSOFT_APP_ID
-  @settings[:microsoft_app_secret_development]  = DevelopmentKeys::MICROSOFT_APP_SECRET
-  @settings[:microsoft_directory_development]   = DevelopmentKeys::MICROSOFT_DIRECTORY
 
 rescue LoadError
   puts <<EOS
@@ -160,20 +141,14 @@ end
 def login_facebook
   @settings[:login_facebook]
 end
-def login_twitter
-  @settings[:login_twitter]
-end
 def login_linkedin
   @settings[:login_linkedin]
 end
 def login_google
   @settings[:login_google]
 end
-def login_microsoft
-  @settings[:login_microsoft]
-end
 def login_oauth
-  login_facebook || login_twitter || login_linkedin || login_google || login_microsoft
+  login_facebook || login_linkedin || login_google
 end
 
 def footer
@@ -193,11 +168,9 @@ def add_gems
   gem "omniauth", "~> 1.9.1"
   gem 'omniauth-oauth2' if login_oauth
   gem 'omniauth-facebook' if login_facebook
-  #gem 'omniauth-twitter' if login_twitter
   gem 'omniauth-linkedin-oauth2' if login_linkedin
   gem 'google-api-client' if login_google
   gem 'omniauth-google-oauth2' if login_google
-  #gem 'omniauth-azure-activedirectory-v2' if login_microsoft
 
   #gem 'sidekiq', '~> 6.3', '>= 6.3.1'
 end
@@ -233,34 +206,20 @@ def add_omniauth
   # Add columns to the user table for Facebook and Twitter
   if login_facebook
     generate(:migration, "AddFacebookToUsers fb_uid:string fb_email:string fb_first_name:string fb_last_name:string \
-      fb_name:string fb_location:string fb_image:string fb_nickname:string fb_url:string fb_gender:string \
-      fb_locale:string fb_username:string --force")
-    p << %w{ :fb_uid :fb_first_name :fb_last_name :fb_name :fb_location :fb_image :fb_nickname :fb_url :fb_gender :fb_locale :fb_username }
-  end
-
-  if login_twitter
-    generate(:migration, "AddTwitterToUsers tw_uid:string tw_name:string tw_nickname:string \
-      tw_location:string tw_image:string tw_description:string tw_friends:integer \
-      tw_followers:integer tw_statuses:integer tw_listed:integer --force")
-      p << %w{ :tw_uid :tw_name :tw_nickname :tw_location :tw_image :tw_description :tw_friends :tw_followers :tw_statuses :tw_listed }
+      fb_name:string fb_image:string  --force")
+    p << %w{ :fb_uid :fb_first_name :fb_last_name :fb_name :fb_image }
   end
 
   if login_linkedin
     generate(:migration, "AddLinkedinToUsers li_uid:string li_email:string li_first_name:string li_last_name:string \
-      li_name:string li_image:text li_headline:string li_industry:string --force")
-    p << %w{ :li_uid :li_email :li_first_name :li_last_name :li_name :li_image :li_headline :li_industry }
+      li_name:string li_image:text --force")
+    p << %w{ :li_uid :li_email :li_first_name :li_last_name :li_name :li_image }
   end
 
   if login_google
     generate(:migration, "AddGoogleToUsers go_uid:string go_email:string go_first_name:string go_last_name:string \
       go_name:string go_image:text --force")
     p << %w{ :go_uid :go_email :go_first_name :go_last_name :go_name :go_image }
-  end
-
-  if login_microsoft
-    generate(:migration, "AddMicrosoftToUsers ms_uid:string ms_email:string ms_first_name:string ms_last_name:string \
-      ms_name:string ms_image:text --force")
-    p << %w{ :ms_uid :ms_email :ms_first_name :ms_last_name :ms_name :ms_image }
   end
 
   inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-FILE
@@ -274,17 +233,13 @@ def add_omniauth
 
   # Define API keys for the various OAuth providers. These keys are edited at the top of this file
   inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_facebook.rb'), :before => %r{^end$} if login_facebook
-  inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_twitter.rb'), :before => %r{^end$} if login_twitter
   inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_linkedin.rb'), :before => %r{^end$} if login_linkedin
   inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_google.rb'), :before => %r{^end$} if login_google
-  inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_microsoft.rb'), :before => %r{^end$} if login_microsoft
 
   providers = []
   providers << ":facebook" if login_facebook
-  providers << ":twitter" if login_twitter
   providers << ":linkedin" if login_linkedin
   providers << ":google_oauth2" if login_google
-  providers << ":azure_activedirectory_v2" if login_microsoft
 
   # Omniauth (https://github.com/plataformatec/devise/wiki/OmniAuth:-Overview)
   if login_oauth
@@ -293,10 +248,8 @@ def add_omniauth
 
     get_file 'app/controllers/users/omniauth_callbacks_controller.rb'
     inject_into_file 'app/controllers/users/omniauth_callbacks_controller.rb', get_file_contents('app/controllers/users/_omniauth_callbacks_controller_facebook.rb'), :before => %r{^end$} if login_facebook
-    inject_into_file 'app/controllers/users/omniauth_callbacks_controller.rb', get_file_contents('app/controllers/users/_omniauth_callbacks_controller_twitter.rb'), :before => %r{^end$} if login_twitter
     inject_into_file 'app/controllers/users/omniauth_callbacks_controller.rb', get_file_contents('app/controllers/users/_omniauth_callbacks_controller_linkedin.rb'), :before => %r{^end$} if login_linkedin
     inject_into_file 'app/controllers/users/omniauth_callbacks_controller.rb', get_file_contents('app/controllers/users/_omniauth_callbacks_controller_google.rb'), :before => %r{^end$} if login_google
-    inject_into_file 'app/controllers/users/omniauth_callbacks_controller.rb', get_file_contents('app/controllers/users/_omniauth_callbacks_controller_microsoft.rb'), :before => %r{^end$} if login_microsoft
   end
 
   # Update the user model with roles
@@ -306,24 +259,19 @@ def add_omniauth
   username << "name" if login_local
   username << "fb_name" if login_facebook
   username << "go_name" if login_google
-  username << "tw_name" if login_twitter
   username << "li_name" if login_linkedin
-  username << "ms_name" if login_microsoft
   username << '"<no name>"'
 
   avatar = []
   avatar << "fb_image" if login_facebook
   avatar << "go_image" if login_google
-  avatar << "tw_image" if login_twitter
   avatar << "li_image" if login_linkedin
   avatar << '"http://www.gravatar.com/avatar/\#{Digest::MD5.hexdigest(email)}"'
 
   inject_into_file 'app/models/user.rb', get_file_contents('app/models/_user.rb'), :before => %r{^end$}
   inject_into_file 'app/models/user.rb', get_file_contents('app/models/_user_facebook.rb'), :before => %r{^end$} if login_facebook
-  inject_into_file 'app/models/user.rb', get_file_contents('app/models/_user_twitter.rb'), :before => %r{^end$} if login_twitter
   inject_into_file 'app/models/user.rb', get_file_contents('app/models/_user_linkedin.rb'), :before => %r{^end$} if login_linkedin
   inject_into_file 'app/models/user.rb', get_file_contents('app/models/_user_google.rb'), :before => %r{^end$} if login_google
-  inject_into_file 'app/models/user.rb', get_file_contents('app/models/_user_microsoft.rb'), :before => %r{^end$} if login_microsoft
 
   inject_into_file "app/models/user.rb", :before => %r{^end$} do <<-FILE
 
@@ -522,21 +470,10 @@ def update_content
   inject_into_file "app/views/layouts/application.html.erb", get_file_contents('app/views/layouts/_application_head.html.erb'), :before => %r{^  </head>$}
   inject_into_file "app/views/layouts/application.html.erb", get_file_contents('app/views/layouts/_application_navbar.html.erb'), :before => %r{^    <main}
 
-  # Download Bootstrap social icons
-  #run "wget -O app/assets/stylesheets/bootstrap-social.css https://github.com/lipis/bootstrap-social/raw/gh-pages/bootstrap-social.css"
-
-  #append_file 'app/assets/config/manifest.js', "\n//= link bootstrap-social.css\nw"
-
-  #append_file 'app/assets/stylesheets/application.bootstrap.scss', "#{get_file_contents('app/assets/stylesheets/_application.bootstrap.scss')}"
-
   # Redirect user to dashboard after having logged in
   inject_into_file 'app/controllers/application_controller.rb', get_file_contents('app/controllers/_application_controller.rb'), :before => %r{^end$}
 
   # Download images
-  get_file 'app/assets/images/banner-flowers.jpg', nil, true
-  get_file 'app/assets/images/bird.jpg', nil, true
-  get_file 'app/assets/images/seaweed.jpg', nil, true
-  get_file 'app/assets/images/shells.jpg', nil, true
   get_file 'app/assets/images/logo.png', nil, true
   get_file 'app/assets/images/logo-600px.png', nil, true
   get_file 'app/assets/images/favicon.ico', nil, true
@@ -557,25 +494,19 @@ def update_content
 
   get_file     'app/views/devise/sessions/new.html.erb'
   #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_facebook.html.erb') if login_facebook
-  #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_twitter.html.erb') if login_twitter
   #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_linkedin.html.erb') if login_linkedin
   #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_google.html.erb') if login_google
-  #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_microsoft.html.erb') if login_microsoft
   #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_local.html.erb') if login_local
 
   get_file 'app/views/devise/registrations/new.html.erb'
-  #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_microsoft.html.erb') if login_microsoft
   #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_google.html.erb') if login_google
   #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_linkedin.html.erb') if login_linkedin
-  #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_twitter.html.erb') if login_twitter
   #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_facebook.html.erb') if login_facebook
 
   get_file 'app/views/devise/registrations/edit.html.erb'
   #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_facebook.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_facebook
-  #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_twitter.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_twitter
   #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_linkedin.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_linkedin
   #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_google.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_google
-  #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_microsoft.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_microsoft
 
   get_file 'app/views/devise/passwords/new.html.erb'
 
