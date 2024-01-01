@@ -1,9 +1,7 @@
-  <div style="width:150px;float:left">
-    <% if current_user.has_linkedin? %>
-    <button type="button" class="btn btn-sm btn-social" style="color:white;background:#007BB6" disabled><i class="fa fa-linkedin"></i>Linkedin</button>
-    <% else %>
-    <a href="/users/auth/linkedin">
-      <button type="button" class="btn btn-sm btn-social" style="color:white;background:#007BB6"><i class="fa fa-linkedin"></i>Linkedin</button>
-    </a>
-    <% end %>
-  </div>
+      <% if current_user.has_linkedin? %>
+      <button class="bg-gray-500 text-white font-bold py-2 px-4 rounded" disabled>Linkedin</button>
+      <% else %>
+      <a href="/users/auth/linkedin">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Linkedin</button>
+      </a>
+      <% end %>

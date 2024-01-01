@@ -1,9 +1,7 @@
-  <div style="width:150px;float:left">
-    <% if current_user.has_facebook? %>
-    <button type="button" class="btn btn-sm btn-social" style="color:white;background:#3B5998" disabled><i class="fa fa-facebook"></i>Facebook</button>
-    <% else %>
-    <a href="/users/auth/facebook">
-      <button type="button" class="btn btn-sm btn-social" style="color:white;background:#3B5998"><i class="fa fa-facebook"></i>Facebook</button>
-    </a>
-    <% end %>
-  </div>
+      <% if current_user.has_facebook? %>
+      <button class="bg-gray-500 text-white font-bold py-2 px-4 rounded" disabled>Facebook</button>
+      <% else %>
+      <a href="/users/auth/facebook">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Facebook</button>
+      </a>
+      <% end %>

@@ -1,0 +1,17 @@
+    <%- if devise_mapping.omniauthable? %>
+
+    <div class="relative py-8">
+      <div class="absolute inset-0 flex items-center">
+        <div class="w-full border-b border-gray-300"></div>
+      </div>
+      <div class="relative flex justify-center">
+        <span class="bg-white px-4 text-sm text-gray-500">Or continue with</span>
+      </div>
+    </div>
+    <div class="grid grid-cols-3 gap-3">
+
+      <!--SOCIAL-->
+      <%- resource_class.omniauth_providers.each do |provider| %>
+      <% end %>
+    </div>
+    <% end %>

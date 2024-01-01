@@ -10,56 +10,5 @@
       <% end %>
     </div>
 
-    <div class="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
-      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: 'space-y-6'}) do |f| %>
-      <%= render "devise/shared/error_messages", resource: resource %>
-      <div>
-        <%= f.label :email, "Email", class: "block text-sm font-medium leading-6 text-gray-900"  %>
-        <div class="mt-2">
-          <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" %>
-        </div>
-      </div>
-
-      <div>
-        <div class="flex items-center justify-between">
-          <%= f.label :password, "Password", class: "block text-sm font-medium leading-6 text-gray-900" %>
-          <div class="text-sm">
-            <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
-            <%= link_to "Forgot password?", new_password_path(resource_name), class: "font-semibold text-indigo-600 hover:text-indigo-500" %>
-            <% end %>
-          </div>
-        </div>
-        <div class="mt-2">
-          <%= f.password_field :password, autocomplete: "current-password", class: "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" %>
-        </div>
-      </div>
-
-      <div>
-        <%= f.submit "Sign in", class: "flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-      </div>
-      <% end %>
-    </div>
-
-    <%- if devise_mapping.omniauthable? %>
-
-    <div class="relative py-8">
-      <div class="absolute inset-0 flex items-center">
-        <div class="w-full border-b border-gray-300"></div>
-      </div>
-      <div class="relative flex justify-center">
-        <span class="bg-white px-4 text-sm text-gray-500">Or continue with</span>
-      </div>
-    </div>
-    <div class="grid grid-cols-3 gap-3">
-
-      <%= button_to "Facebook", omniauth_authorize_path(resource_name, "facebook"), data: { turbo: false }, class: "bg-blue-600 hover:bg-blue-700 text-white px-4 mx-2 py-2 w-full rounded" %>
-      <%= button_to "Google", omniauth_authorize_path(resource_name, "google_oauth2"), data: { turbo: false }, class: "bg-red-500 hover:bg-red-600 text-white px-4 mx-2 py-2 w-full rounded" %>
-      <%= button_to "Linkedin", omniauth_authorize_path(resource_name, "linkedin"), data: { turbo: false }, class: "bg-blue-600 hover:bg-blue-700 text-white px-4 mx-2 py-2 w-full rounded" %>
-
-      <%- resource_class.omniauth_providers.each do |provider| %>
-      <% end %>
-    </div>
-    <% end %>
-
   </div>
 </div>

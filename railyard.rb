@@ -179,18 +179,6 @@ end
 ### Content functions
 ##################################
 
-def add_tailwind
-  #generate "devise:views:tailwinded"
-end
-
-def add_alpine
-  #rails_command "importmap:install"
-  run "bin/importmap pin alpinejs"
-  
-  append_file 'app/assets/stylesheets/application.css', get_file_contents('app/assets/stylesheets/_application_alpine.css')
-  append_file 'app/javascript/application.js', get_file_contents('app/javascript/_application_alpine.js')
-end
-
 def add_omniauth
 
   # Add roles mask to the user table
@@ -486,20 +474,19 @@ def update_content
   get_file 'app/views/home/index.html.erb'
 
   get_file     'app/views/devise/sessions/new.html.erb'
-  #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_facebook.html.erb') if login_facebook
-  #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_linkedin.html.erb') if login_linkedin
-  #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_google.html.erb') if login_google
-  #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_local.html.erb') if login_local
+  inject_into_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_local.html.erb'), :before => %r{^  </div>$} if login_local
+  inject_into_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_oauth.html.erb'), :before => %r{^  </div>$} if login_oauth
+  inject_into_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_facebook.html.erb'), :before => %r{^      <!--SOCIAL} if login_facebook
+  inject_into_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_google.html.erb'), :before => %r{^      <!--SOCIAL} if login_google
+  inject_into_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_linkedin.html.erb'), :before => %r{^      <!--SOCIAL} if login_linkedin
 
   get_file 'app/views/devise/registrations/new.html.erb'
-  #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_google.html.erb') if login_google
-  #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_linkedin.html.erb') if login_linkedin
-  #prepend_file 'app/views/devise/registrations/new.html.erb', get_file_contents('app/views/devise/registrations/_new_facebook.html.erb') if login_facebook
 
   get_file 'app/views/devise/registrations/edit.html.erb'
-  #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_facebook.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_facebook
-  #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_linkedin.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_linkedin
-  #inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_google.html.erb'), :before => %r{^<!--SOCIAL-->$} if login_google
+  inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_oauth.html.erb'), :before => %r{^  <!--OAUTH-->$} if login_oauth
+  inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_facebook.html.erb'), :before => %r{^      <!--SOCIAL-->$} if login_facebook
+  inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_google.html.erb'), :before => %r{^      <!--SOCIAL-->$} if login_google
+  inject_into_file 'app/views/devise/registrations/edit.html.erb', get_file_contents('app/views/devise/registrations/_edit_linkedin.html.erb'), :before => %r{^      <!--SOCIAL-->$} if login_linkedin
 
   get_file 'app/views/devise/passwords/new.html.erb'
 
@@ -520,8 +507,6 @@ add_gems
 
 after_bundle do
   pre_setup
-  add_tailwind
-  #add_alpine
   add_users
   add_omniauth
   #add_sidekiq
