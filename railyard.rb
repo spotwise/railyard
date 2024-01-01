@@ -482,15 +482,8 @@ def update_content
   get_file 'app/assets/images/apple-touch-icon-144x144-precomposed.png', nil, true
   get_file 'app/assets/images/apple-touch-icon-precomposed.png', nil, true
 
-  # Add custom Javascript and stylesheets
-  #append_file 'app/javascript/packs/application.js', get_file_contents('app/javascript/packs/_application.js')
-  #get_file 'app/javascript/stylesheets/application.scss'
-
   # Replace the home page
   get_file 'app/views/home/index.html.erb'
-
-  # Layout account pages
-  #get_file 'app/views/layouts/devise.html.erb'
 
   get_file     'app/views/devise/sessions/new.html.erb'
   #append_file 'app/views/devise/sessions/new.html.erb', get_file_contents('app/views/devise/sessions/_new_facebook.html.erb') if login_facebook
@@ -516,8 +509,6 @@ def update_content
   inject_into_file "config/application.rb", get_file_contents('config/_application_devise.rb'), :before => %r{^  end$}
 
   inject_into_file "config/application.rb", get_file_contents('config/_application_google.rb'), :before => %r{^  end$} if login_google
-
-  #run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss"
 
   append_file "README.md", get_file_contents('_README.md')
 end

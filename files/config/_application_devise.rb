@@ -8,4 +8,4 @@
     # If this configuration option is false, it is only possible to log on using OAuth after
     # first having logged on using a local account and then associating that account with
     # one or more social platforms.
-    config.allow_social_account_creation = false
+    config.allow_social_account_creation = true
