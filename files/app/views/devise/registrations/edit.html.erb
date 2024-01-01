@@ -1,99 +1,98 @@
 <div class="flex-col">
 
-<div class="card w-full py-8">
-  <h2 class="font-semibold text-xl text-indigo-500">Your profile</h2>
-  <p class="py-2">Click on the services below to associate them with your account. This will allow you to use them to log onto the system. If you do not do this a new account may be created for you if you log on with another service.</p>
+  <div class="card w-full py-8">
+    <h2 class="font-semibold text-xl text-indigo-500">Your profile</h2>
+    <p class="py-2">Click on the services below to associate them with your account. This will allow you to use them to log onto the system. If you do not do this a new account may be created for you if you log on with another service.</p>
   
-  <div class="flex-row">
-    <% if current_user.has_facebook? %>
-    <button class="bg-gray-500 text-white font-bold py-2 px-4 rounded" disabled>Facebook</button>
-    <% else %>
-    <a href="/users/auth/facebook">
-      <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Facebook</button>
-    </a>
-    <% end %>
+    <div class="flex-row">
+      <% if current_user.has_facebook? %>
+      <button class="bg-gray-500 text-white font-bold py-2 px-4 rounded" disabled>Facebook</button>
+      <% else %>
+      <a href="/users/auth/facebook">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Facebook</button>
+      </a>
+      <% end %>
+
+      <% if current_user.has_google? %>
+      <button class="bg-gray-500 text-white font-bold py-2 px-4 rounded" disabled>Google</button>
+      <% else %>
+      <a href="/users/auth/google_oauth2">
+        <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Google</button>
+      </a>
+      <% end %>
   
-    <% if current_user.has_google? %>
-    <button class="bg-gray-500 text-white font-bold py-2 px-4 rounded" disabled>Google</button>
-    <% else %>
-    <a href="/users/auth/google_oauth2">
-      <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Google</button>
-    </a>
-    <% end %>
-  
-    <% if current_user.has_linkedin? %>
-    <button class="bg-gray-500 text-white font-bold py-2 px-4 rounded" disabled>Linkedin</button>
-    <% else %>
-    <a href="/users/auth/linkedin">
-      <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Linkedin</button>
-    </a>
-    <% end %>
+      <% if current_user.has_linkedin? %>
+      <button class="bg-gray-500 text-white font-bold py-2 px-4 rounded" disabled>Linkedin</button>
+      <% else %>
+      <a href="/users/auth/linkedin">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Linkedin</button>
+      </a>
+      <% end %>
+    </div>
   </div>
-</div>
 
   <% if current_user.provider.nil? -%>
   <div class="card w-full py-8">
 
-  <h3 class="font-semibold text-xl text-indigo-500">Change password</h3>
-  <p class="py-2">Use this alternative to change your local password. This is the password used for the account specifically used for this service. It does <strong>not</strong> change the password for any used social accounts.</p>
+    <h3 class="font-semibold text-xl text-indigo-500">Change password</h3>
+    <p class="py-2">Use this alternative to change your local password. This is the password used for the account specifically used for this service. It does <strong>not</strong> change the password for any used social accounts.</p>
 
-  <%= form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :method => :put, :class => 'form-horizontal' }) do |f| %>
-  <%= devise_error_messages! %>
+    <%= form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :method => :put, :class => 'form-horizontal' }) do |f| %>
+    <%= devise_error_messages! %>
 
-  <div class="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-6">
+    <div class="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-6">
 
-    <div class="sm:col-span-4">
-      <%= f.label :email, class: "block text-md font-medium leading-6 text-gray-900" %>
-      <div class="mt-2">
-        <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-          <%= f.email_field :email, :autofocus => true, :disabled => true, :class => 'block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6' %>
-        </div>
-        <p class="text-xs leading-6 text-gray-600">This will be filled in automatically and can't be changed.</p>
-        <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+      <div class="sm:col-span-4">
+        <%= f.label :email, class: "block text-md font-medium leading-6 text-gray-900" %>
+        <div class="mt-2">
+          <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+            <%= f.email_field :email, :autofocus => true, :disabled => true, :class => 'block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6' %>
+          </div>
+          <p class="text-xs leading-6 text-gray-600">This will be filled in automatically and can't be changed.</p>
+          <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
           <small id="emailHelp" class="form-text text-muted">Currently waiting confirmation for: <%= resource.unconfirmed_email %></small>
-        <% end %>
+          <% end %>
+        </div>
       </div>
+
+      <div class="sm:col-span-4">
+        <%= f.label :password, class: "block text-md font-medium leading-6 text-gray-900" %>
+        <div class="mt-2">
+          <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+            <%= f.password_field :password, :autocomplete => "off", :class => 'block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6' %>
+          </div>
+          <p class="text-xs leading-6 text-gray-600">Leave blank if you don't want to change it.</p>
+        </div>
+      </div>
+
+      <div class="sm:col-span-4">
+        <%= f.label :password_confirmation, class: "block text-md font-medium leading-6 text-gray-900" %>
+        <div class="mt-2">
+          <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+            <%= f.password_field :password_confirmation, :autocomplete => "off", :class => 'block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6' %>
+          </div>
+          <p class="text-xs leading-6 text-gray-600">Please retype your new password.</p>
+        </div>
+      </div>
+
+      <div class="sm:col-span-4">
+        <%= f.label :current_password, class: "block text-md font-medium leading-6 text-gray-900" %>
+        <div class="mt-2">
+          <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+            <%= f.password_field :current_password, :autocomplete => "off", :class => 'block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6' %>
+          </div>
+          <p class="text-xs leading-6 text-gray-600">We need your current password to confirm your changes.</p>
+        </div>
+      </div>
+
     </div>
 
-    <div class="sm:col-span-4">
-      <%= f.label :password, class: "block text-md font-medium leading-6 text-gray-900" %>
-      <div class="mt-2">
-        <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-          <%= f.password_field :password, :autocomplete => "off", :class => 'block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6' %>
-        </div>
-        <p class="text-xs leading-6 text-gray-600">Leave blank if you don't want to change it.</p>
-      </div>
-    </div>
+    <div><%= f.submit "Update", :class => 'bg-blue-600 hover:bg-blue-700 text-white font-bold mt-4 py-2 px-4 rounded' %></div>
 
-    <div class="sm:col-span-4">
-      <%= f.label :password_confirmation, class: "block text-md font-medium leading-6 text-gray-900" %>
-      <div class="mt-2">
-        <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-          <%= f.password_field :password_confirmation, :autocomplete => "off", :class => 'block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6' %>
-        </div>
-        <p class="text-xs leading-6 text-gray-600">Please retype your new password.</p>
-      </div>
-    </div>
-
-    <div class="sm:col-span-4">
-      <%= f.label :current_password, class: "block text-md font-medium leading-6 text-gray-900" %>
-      <div class="mt-2">
-        <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-          <%= f.password_field :current_password, :autocomplete => "off", :class => 'block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6' %>
-        </div>
-        <p class="text-xs leading-6 text-gray-600">We need your current password to confirm your changes.</p>
-      </div>
-    </div>
+    <% end %>
 
   </div>
-
-  <div><%= f.submit "Update", :class => 'bg-blue-600 hover:bg-blue-700 text-white font-bold mt-4 py-2 px-4 rounded' %></div>
-
-<% end %>
-
-</div>
-<% end -%>
-
+  <% end -%>
 
 <!--SOCIAL-->
 
