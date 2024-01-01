@@ -4,7 +4,13 @@
     puts request.env["omniauth.auth"]
   
     @user = User.find_for_google_oauth2(request.env["omniauth.auth"], current_user, session)
-  
+
+    unless @user
+      flash[:error] = session["flash_error"]
+      redirect_to new_user_session_url
+      return
+    end
+
     if @user.persisted?
       sign_in_and_redirect @user, :event => :authentication #this will throw if @user is not activated
       if @user.errors.empty?

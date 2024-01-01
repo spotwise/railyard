@@ -7,6 +7,14 @@
     user = User.where(:li_uid => auth.uid).first unless user
     
     p auth unless user
+
+    # Prevent account creation via social login
+    unless Rails.application.config.allow_social_account_creation || signed_in_resource || user
+      # This means that the user is not logged in and there was no matching User object
+      session["flash_error"] = "A local account is required in order to log on using Linkedin."
+      return nil
+    end
+
     unless user
       user = User.create(provider:auth.provider,
         uid:auth.uid,
