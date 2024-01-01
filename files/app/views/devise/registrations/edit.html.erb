@@ -31,13 +31,6 @@
   </div>
 </div>
 
-<div class="card w-full py-8">
-  <h3 class="font-semibold text-xl text-indigo-500">Cancel my account</h3>
-  <p class="py-2">If you do not want to use this service you can cancel your account. <strong>Note that doing so will delete all your data.</strong></p>
-  <p class="py-2"><%= link_to 'Cancel my account', registration_path(resource_name), data: {turbo_method: :delete, turbo_confirm: 'Are you sure?'}, class: "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" %>  </p>
-</div>
-
-
   <% if current_user.provider.nil? -%>
   <div class="card w-full py-8">
 
@@ -104,5 +97,10 @@
 
 <!--SOCIAL-->
 
+  <div class="card w-full py-8">
+    <h3 class="font-semibold text-xl text-indigo-500">Cancel my account</h3>
+    <p class="py-2">If you do not want to use this service you can cancel your account. <strong>Note that doing so will delete all your data.</strong></p>
+    <p class="py-2"><%= link_to 'Cancel my account', registration_path(resource_name), data: {turbo_method: :delete, turbo_confirm: 'Are you sure?'}, class: "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" %>  </p>
+  </div>
 
 </div>

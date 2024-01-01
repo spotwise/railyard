@@ -8,4 +8,7 @@
     # If this configuration option is false, it is only possible to log on using OAuth after
     # first having logged on using a local account and then associating that account with
     # one or more social platforms.
+    #
+    # Note that /users/sign_up is still accessible so it is trivial for users to create
+    # their own account. Disable this route if required by the application.
     config.allow_social_account_creation = true
