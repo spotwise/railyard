@@ -7,7 +7,7 @@
 # Changes from previous version:
 # - Rewritten to use Rails 7.1 and Tailwind
 # - Simplified design with fewer tweaks, leaving more for the individual implementation
-# - Verified with Ruby 3.2.2, Rails 7.1.2, rbenv 1.2.0, npm 9.6.6
+# - Verified with Ruby 3.2.2, Rails 7.1.2, rbenv 1.2.0, npm 10.1.0
 #
 # Copyright © 2014-2024 Spotwise
 #
@@ -19,15 +19,14 @@
 # Google: https://code.google.com/apis/console/
 #
 # Check respective provider above for information on how to create
-# app and get app ID and secret
+# an app and get app ID and secret
 #
 # Production keys need to be unique for this application while
 # development keys can be reused between applications
 #
 # NOTE Current issues:
-# - This template must be started with the switch --css=bootstrap
+# - This template must be started with the switch --css=tailwind
 # - Swagger API generation is currently commented out
-# - Run with environment variable RAILS_TEMPLATE_DEBUG set to load local files
 #
 # This script reads resources from the online repository. To instead load resources locally,
 # set the environment variable RAILS_TEMPLATE_DEBUG to any value, i.e.
@@ -165,12 +164,6 @@ def add_gems
   gem 'cancancan'
   gem 'sidekiq'
 
-  #gem 'rswag'
-  #gem_group :development, :test do
-  #  gem 'rspec-rails'
-  #  gem 'rswag-specs'
-  #end
-
   gem 'role_model'
   gem "omniauth", "~> 1.9.1"
   gem 'omniauth-oauth2' if login_oauth
@@ -178,6 +171,10 @@ def add_gems
   gem 'omniauth-linkedin-oauth2' if login_linkedin
   gem 'google-api-client' if login_google
   gem 'omniauth-google-oauth2' if login_google
+
+  # Note: Swagger is currently disabled
+  #gem 'rspec-rails'
+  #gem 'rswag'
 
 end
 
@@ -254,6 +251,7 @@ def add_omniauth
   username << "fb_name" if login_facebook
   username << "go_name" if login_google
   username << "li_name" if login_linkedin
+  username << "email" if login_linkedin
   username << '"<no name>"'
 
   avatar = []
@@ -290,7 +288,6 @@ def add_seed_data
   # Add seed data to create a user
   if login_local
     append_file 'db/seeds.rb', get_file_contents('db/_seeds.rb')
-    #rails_command "db:seed"
   end
 end
 
@@ -310,14 +307,13 @@ def add_sidekiq
 end
 
 def add_swagger
-  # Add support for Swagger
-  generate('rswag:specs:install')
-  generate('rswag:api:install')
-  generate('rswag:ui:install')
+  # Note: Currently breaks application template
+
   generate('rspec:install')
+  generate('rswag:install')
 
   all_models.sort.each do |c|
-    generate("rspec:swagger API::V1::#{c.pluralize}_Controller")
+    generate("rspec:swagger #{c.tableize}")
   end
 
   #run('rails rswag:specs:swaggerize')
@@ -359,6 +355,16 @@ def add_users
 
 end
 
+def update_scaffolding_templates
+  # Note: Not yet updated to Tailwind format, using the default templates
+  inject_into_file "config/application.rb", get_file_contents('config/_application_generators.rb'), :before => %r{^  end$}
+  get_file 'lib/templates/erb/scaffold/_form.html.erb.tt'
+  get_file 'lib/templates/erb/scaffold/edit.html.erb.tt'
+  get_file 'lib/templates/erb/scaffold/index.html.erb.tt'
+  get_file 'lib/templates/erb/scaffold/new.html.erb.tt'
+  get_file 'lib/templates/erb/scaffold/show.html.erb.tt'
+end
+
 def create_scaffolding
   # Create scaffolding
   # TODO: Create an application specific data model instead of Author -> Books -> Reviews
@@ -370,16 +376,6 @@ def create_scaffolding
 end
 
 def pre_setup
-  #inject_into_file "config/application.rb", get_file_contents('config/_application_generators.rb'), :before => %r{^  end$}
-  #get_file 'lib/templates/erb/scaffold/_form.html.erb.tt'
-  #get_file 'lib/templates/erb/scaffold/edit.html.erb.tt'
-  #get_file 'lib/templates/erb/scaffold/index.html.erb.tt'
-  #get_file 'lib/templates/erb/scaffold/new.html.erb.tt'
-  #get_file 'lib/templates/erb/scaffold/show.html.erb.tt'
-
-  # Install Devise
-  #generate "devise:install"
-  #generate "devise User"
 
 end
 
@@ -506,6 +502,7 @@ add_gems
 
 after_bundle do
   pre_setup
+  #update_scaffolding_templates
   add_users
   add_omniauth
   add_sidekiq
@@ -514,7 +511,7 @@ after_bundle do
   require_login
   add_test_data
   add_seed_data
-  #fix_destroy_redirects
+  fix_destroy_redirects
   #add_swagger
   post_setup
 
