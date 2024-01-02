@@ -163,6 +163,13 @@ def add_gems
   gem 'devise-tailwinded'
   gem 'devise'
   gem 'cancancan'
+  gem 'sidekiq'
+
+  #gem 'rswag'
+  #gem_group :development, :test do
+  #  gem 'rspec-rails'
+  #  gem 'rswag-specs'
+  #end
 
   gem 'role_model'
   gem "omniauth", "~> 1.9.1"
@@ -172,7 +179,6 @@ def add_gems
   gem 'google-api-client' if login_google
   gem 'omniauth-google-oauth2' if login_google
 
-  #gem 'sidekiq', '~> 6.3', '>= 6.3.1'
 end
 
 ##################################
@@ -304,25 +310,17 @@ def add_sidekiq
 end
 
 def add_swagger
-  # append_file "Gemfile", "\n# Install gems"
-
-  # gem 'rswag'
-  # gem_group :development, :test do
-  #   gem 'rspec-rails'
-  #   gem 'rswag-specs'
-  # end
-
   # Add support for Swagger
-  # generate('rswag:specs:install')
-  # generate('rswag:api:install')
-  # generate('rswag:ui:install')
-  # generate('rspec:install')
+  generate('rswag:specs:install')
+  generate('rswag:api:install')
+  generate('rswag:ui:install')
+  generate('rspec:install')
 
-  # all_models.sort.each do |c|
-  #   generate("rspec:swagger API::V1::#{c.pluralize}_Controller")
-  # end
+  all_models.sort.each do |c|
+    generate("rspec:swagger API::V1::#{c.pluralize}_Controller")
+  end
 
-  # run('rails rswag:specs:swaggerize')
+  #run('rails rswag:specs:swaggerize')
 end
 
 def add_test_data
@@ -510,13 +508,14 @@ after_bundle do
   pre_setup
   add_users
   add_omniauth
-  #add_sidekiq
+  add_sidekiq
   create_scaffolding
   update_content
   require_login
   add_test_data
   add_seed_data
   #fix_destroy_redirects
+  #add_swagger
   post_setup
 
   say
