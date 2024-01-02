@@ -2,7 +2,7 @@
 
 	<div class="flex mx-auto flex-col justify-center px-6 py-8 lg:px-8 border shadow mb-10">
 	  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-		<div class="w-full text-center tracking-tight text-3xl font-black text-indigo-700">RAILYARD</div>
+		<div class="w-full text-center tracking-tight text-3xl font-black text-indigo-700">#{@settings[:application_name].upcase}</div>
 		<h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Reset password</h2>
 		<%= render "devise/shared/error_messages", resource: resource %>
 		<% flash.each do |key, value| %>

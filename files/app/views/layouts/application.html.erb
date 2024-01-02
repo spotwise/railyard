@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Ta2</title>
+    <title><%= content_for?(:title) ? yield(:title) : "#{@settings[:application_name].upcase}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -43,16 +43,14 @@
           </div>
           <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div class="flex flex-shrink-0 items-center">
-              <span class="text-lg font-black text-white">RAILYARD</span>
+              <span class="text-lg font-black text-white">#{@settings[:application_name].upcase}</span>
             </div>
             <div class="hidden sm:ml-6 sm:block">
               <div class="flex space-x-4">
                 <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
                 <a href="/" class="bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Home</a>
                 <% if user_signed_in? %>
-                <a href="/authors" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Authors</a>
-                <a href="/books" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Books</a>
-                <a href="/reviews" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Reviews</a>
+                #{@settings[:desktop_menu]}
                 <% end %>
               </div>
             </div>
@@ -121,9 +119,7 @@
           <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
           <a href="/" class="bg-gray-900 text-white block rounded-md px-3 py-2 text-base font-medium" aria-current="page">Home</a>
           <% if user_signed_in? %>
-          <a href="/authors" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Authors</a>
-          <a href="/books" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Books</a>
-          <a href="/reviews" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Reviews</a>
+          #{@settings[:mobile_menu]}
           <% end %>
         </div>
       </div>
@@ -133,5 +129,8 @@
     <main class="container mx-auto mt-28 px-5 flex">
       <%= yield %>
     </main>
+    <footer>
+      <p class="container mx-auto mt-28 mb-20 text-center font-light text-xs">#{@settings[:footer]}</p>
+    </footer>
   </body>
 </html>

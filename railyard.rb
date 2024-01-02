@@ -37,10 +37,10 @@
 
 # TODO Configure settings
 @settings = {
-  application_name:                 "Test",
+  application_name:                 "Railyard",
   application_url:                  "http://www.example.com",
   company_name:                     "Example Inc",
-  copyright_year:                   "2023",
+  copyright_year:                   "2024",
   login_local:                      true,
   login_facebook:                   true,
   login_linkedin:                   true,
@@ -445,18 +445,19 @@ end
 
 def update_content
   # First create the menu items based on existing models
-  #menu_model_items = ""
-  #all_models.sort.each do |c|
-  #  menu_model_items += "<li class='nav-item'><%= link_to '#{c.pluralize}', '/#{c.tableize}', :class => 'nav-link'  %></li>\n              "
-  #end
+  mobile_menu_items = ""
+  desktop_menu_items = ""
+  all_models.sort.each do |c|
+    mobile_menu_items += "<%= link_to '#{c.pluralize}', '/#{c.tableize}', :class => 'text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-sm font-medium'  %></li>\n                "
+    desktop_menu_items += "<%= link_to '#{c.pluralize}', '/#{c.tableize}', :class => 'text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-base font-medium'  %></li>\n          "
+  end
 
-  #@settings[:footer] = footer
-  #@settings[:menu] = menu_model_items
+  @settings[:footer] = footer
+  @settings[:mobile_menu] = mobile_menu_items
+  @settings[:desktop_menu] = desktop_menu_items
 
   # Create the layout file
-  #get_file 'app/views/layouts/application.html.erb'
-  inject_into_file "app/views/layouts/application.html.erb", get_file_contents('app/views/layouts/_application_head.html.erb'), :before => %r{^  </head>$}
-  inject_into_file "app/views/layouts/application.html.erb", get_file_contents('app/views/layouts/_application_navbar.html.erb'), :before => %r{^    <main}
+  get_file 'app/views/layouts/application.html.erb'
 
   # Redirect user to dashboard after having logged in
   inject_into_file 'app/controllers/application_controller.rb', get_file_contents('app/controllers/_application_controller.rb'), :before => %r{^end$}
