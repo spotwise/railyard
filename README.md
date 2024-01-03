@@ -42,7 +42,6 @@ Other settings that may be modified later include:
 * API keys for Facebook, Linkedin and Google
 * Colours for navigation bar and links
 * Footer message
-* Site logo
 
 The repository includes a sample file for development keys. This should be copied to your home directory with the name .development_keys.rb (i.e. hidden) and updated with the sample keys. They are then used during application setup which simplifies the setup when reusing this template for different applications.
 

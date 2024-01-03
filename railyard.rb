@@ -457,13 +457,9 @@ def update_content
   inject_into_file 'app/controllers/application_controller.rb', get_file_contents('app/controllers/_application_controller.rb'), :before => %r{^end$}
 
   # Download images
-  get_file 'app/assets/images/logo.png', nil, true
-  get_file 'app/assets/images/logo-600px.png', nil, true
-  get_file 'app/assets/images/favicon.ico', nil, true
-  get_file 'app/assets/images/apple-touch-icon-72x72-precomposed.png', nil, true
-  get_file 'app/assets/images/apple-touch-icon-114x114-precomposed.png', nil, true
-  get_file 'app/assets/images/apple-touch-icon-144x144-precomposed.png', nil, true
-  get_file 'app/assets/images/apple-touch-icon-precomposed.png', nil, true
+  get_file 'app/assets/images/favicon-16x16.png', nil, true
+  get_file 'app/assets/images/favicon-32x32.png', nil, true
+  get_file 'app/assets/images/apple-touch-icon.png', nil, true
 
   # Replace the home page
   get_file 'app/views/home/index.html.erb'
