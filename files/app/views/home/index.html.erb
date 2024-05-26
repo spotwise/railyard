@@ -118,6 +118,12 @@
     delete 'users' => 'devise/registrations#destroy'
   end
         </p>
+        <h3 class="text-xl font-medium tracking-tight mt-4 mb-2">Simplify tests with belongs_to</h3>
+        <p class="mb-2">Newer versions of Rails check that belongs_to associations actually point to an existing object. This can be problematic during automated tests. To disable this extra validation during testing, add the following to config/environments/test.rb:</p>
+        <p class="text-xs font-mono tracking-tight md:whitespace-pre text-indigo-800 pl-8 mb-4">
+# Disable the need to have a record on the other end of an association
+config.active_record.belongs_to_required_by_default = false
+        </p>
       </div>
     </div>
   </div>
