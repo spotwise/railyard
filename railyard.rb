@@ -5,11 +5,12 @@
 # and authentication support.
 #
 # Changes from previous version:
-# - Rewritten to use Rails 7.1 and Tailwind
+# - Rewritten to use Rails 7.1+ and Tailwind
 # - Simplified design with fewer tweaks, leaving more for the individual implementation
-# - Verified with Ruby 3.2.2, Rails 7.1.2, rbenv 1.2.0, npm 10.1.0
+# - Verified with Ruby 3.4.4, Rails 8.0.2, rbenv 1.3.2, npm 10.9.2
+# - Linkedin authentication now uses OpenID Connect
 #
-# Copyright © 2014-2024 Spotwise
+# Copyright © 2014-2025 Spotwise
 #
 # Check the following web pages for information on how to setup
 # authentication for each identity provider.
@@ -26,6 +27,7 @@
 #
 # NOTE Current issues:
 # - This template must be started with the switch --css=tailwind
+# - Not compatible with old OAuth2 Linkedin applications
 # - Swagger API generation is currently commented out
 #
 # This script reads resources from the online repository. To instead load resources locally,
@@ -39,7 +41,7 @@
   application_name:                 "Railyard",
   application_url:                  "http://www.example.com",
   company_name:                     "Example Inc",
-  copyright_year:                   "2024",
+  copyright_year:                   "2025",
   login_local:                      true,
   login_facebook:                   true,
   login_linkedin:                   true,
@@ -165,10 +167,10 @@ def add_gems
   gem 'sidekiq'
 
   gem 'role_model'
-  gem "omniauth", "~> 1.9.1"
+  gem "omniauth", "~> 2.1"
   gem 'omniauth-oauth2' if login_oauth
   gem 'omniauth-facebook' if login_facebook
-  gem 'omniauth-linkedin-oauth2' if login_linkedin
+  gem 'omniauth-linkedin-openid' if login_linkedin
   gem 'google-api-client' if login_google
   gem 'omniauth-google-oauth2' if login_google
 
@@ -226,6 +228,14 @@ def add_omniauth
   inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_facebook.rb'), :before => %r{^end$} if login_facebook
   inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_linkedin.rb'), :before => %r{^end$} if login_linkedin
   inject_into_file "config/initializers/devise.rb", get_file_contents('config/initializers/_devise_google.rb'), :before => %r{^end$} if login_google
+
+  inject_into_file "config/initializers/devise.rb", :after => %r{^end$} do <<-FILE
+
+    # Allow GET requests (changed CSRF behaviour in OmniAuth 2.0+ )
+    OmniAuth.config.allowed_request_methods = [:get]
+
+  FILE
+  end
 
   providers = []
   providers << ":facebook" if login_facebook
